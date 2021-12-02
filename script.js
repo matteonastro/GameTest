@@ -2,6 +2,7 @@ function startGame() {
 
     myGameArea.start();
     myGameArea.draw(player);
+    
 }
   
 var myGameArea = {
@@ -27,7 +28,8 @@ var player = {
     height: 80,
     x: 500,
     y: 520,
-    color: "red"
+    color: "red",
+    facing: "RIGHT"
 };
 
 var block = {
@@ -37,15 +39,33 @@ var block = {
     y: 600,
     color: "black"
 };
+
+var wallLeft = {
+    width: 20,
+    height: 300,
+    x: 200,
+    y: 300,
+    color: "blue"
+};
+var wallRight = {
+    width: 20,
+    height: 300,
+    x: 1200,
+    y: 300,
+    color: "blue"
+};
   
 let fallSpeed = 10;
+
+let onWall = false;
 
 function updateGameArea() {
     
     myGameArea.canvas.getContext("2d").clearRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
 
     myGameArea.draw(player);
-
+    myGameArea.draw(wallLeft);
+    myGameArea.draw(wallRight);
     myGameArea.draw(block);
 
     if (player.y + player.height < block.y){
@@ -56,12 +76,22 @@ function updateGameArea() {
         airTime = 0;
     }
 
+    if (player.x + player.width > wallRight.x - 5){
+        player.x -= speedRight;
+        onWall = true;
+    }
+
+    if (player.x < wallLeft.x + 30){
+        player.x += speedLeft;
+        onWall = true;
+    }
+
     moveright();
     moveleft();
     movedown();
 
     if (airTime < 161) {
-        moveup();
+        jump();
     }
 
 }
@@ -70,6 +100,7 @@ let speedRight = 0;
 let speedLeft = 0;
 let speedUp = 0;
 let speedDown = 0;
+let sprint = 0;
 
 document.addEventListener('keydown', (event) => {
     
@@ -84,16 +115,18 @@ document.addEventListener('keydown', (event) => {
         
         case "ArrowRight":
             speedRight = 10;
+            player.facing = "RIGHT"
             
         break;
 
-        case "ArrowUp":
+        case "a":
             speedUp = 15;
             
         break;
 
         case "ArrowLeft":
             speedLeft = 10;
+            player.facing = "LEFT"
             
         break;
     }
@@ -114,7 +147,7 @@ document.addEventListener('keyup', (event) => {
             
         break;
 
-        case "ArrowUp":
+        case "a":
             speedUp = 0;
             airTime = 162;
         break;
@@ -128,7 +161,7 @@ document.addEventListener('keyup', (event) => {
 
 let ground = true;
 let airTime = 0;
-function moveup() {
+function jump() {
 
     player.y -= speedUp;
     ground = false;
