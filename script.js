@@ -25,8 +25,8 @@ var myGameArea = {
 var player = {
     width: 40,
     height: 80,
-    x: 10,
-    y: 120,
+    x: 500,
+    y: 520,
     color: "red"
 };
 
@@ -53,35 +53,23 @@ function updateGameArea() {
     } else {
         ground = true;
         fallSpeed = 10;
+        airTime = 0;
     }
+
+    moveright();
+    moveleft();
+    movedown();
+
+    if (airTime < 161) {
+        moveup();
+    }
+
 }
 
-let downPress = true;
-let upPress = true;
-let leftPress = true;
-let rightPress = true;
-
-document.addEventListener('keyup', (event) => {
-
-    switch(event.key) {
-
-        case "ArrowDown":
-            downPress = false;
-        break;
-        
-        case "ArrowRight":
-            rightPress = false;
-        break;
-
-        case "ArrowUp":
-            upPress = false;
-        break;
-
-        case "ArrowLeft":
-            leftPress = false
-        break;
-    }
-});
+let speedRight = 0;
+let speedLeft = 0;
+let speedUp = 0;
+let speedDown = 0;
 
 document.addEventListener('keydown', (event) => {
     
@@ -90,49 +78,72 @@ document.addEventListener('keydown', (event) => {
     switch(event.key) {
 
         case "ArrowDown":
-            while(downPress){
-                movedown();
-            }
+            speedDown = 0;
+            
         break;
         
         case "ArrowRight":
-            while(downPress){
-                moveright();
-            }
+            speedRight = 10;
+            
         break;
 
         case "ArrowUp":
-            while(downPress){
-                moveup();
-            }
+            speedUp = 15;
+            
         break;
 
         case "ArrowLeft":
-            while(downPress){
-                moveleft()
-            }
+            speedLeft = 10;
+            
+        break;
+    }
+});
+document.addEventListener('keyup', (event) => {
+    
+    //ArrowDown ArrowRight ArrowUp ArrowLeft
+
+    switch(event.key) {
+
+        case "ArrowDown":
+            speedDown = 0;
+            
+        break;
+        
+        case "ArrowRight":
+            speedRight = 0;
+            
+        break;
+
+        case "ArrowUp":
+            speedUp = 0;
+            airTime = 162;
+        break;
+
+        case "ArrowLeft":
+            speedLeft = 0;
+            
         break;
     }
 });
 
 let ground = true;
+let airTime = 0;
 function moveup() {
 
-    if (ground) {
-        player.y -= 120;
-        ground = false;
-        fallSpeed = 5;
-    }
+    player.y -= speedUp;
+    ground = false;
+    fallSpeed = 5;
+    airTime += speedUp;
 }
   
 function movedown() {
-    player.y += 10;
+    player.y += speedDown;
 }
 
 function moveleft() {
-    player.x -= 10;
+    player.x -= speedLeft;
 }
 
 function moveright() {
-    player.x += 10;
+    player.x += speedRight;
 }
