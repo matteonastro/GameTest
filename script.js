@@ -1,7 +1,7 @@
 function startGame() {
 
     myGameArea.start();
-    myGameArea.draw(redSquare);
+    myGameArea.draw(player);
 }
   
 var myGameArea = {
@@ -9,8 +9,8 @@ var myGameArea = {
     canvas : document.createElement("canvas"),
 
     start: function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.width = 1450;
+        this.canvas.height = 700;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.interval = setInterval(updateGameArea, 20); //ogni 20 ms chiamo il metodo updateGameArea
@@ -22,29 +22,66 @@ var myGameArea = {
     }
 }
 
-var redSquare = {
-    width: 20,
-    height: 20,
+var player = {
+    width: 40,
+    height: 80,
     x: 10,
     y: 120,
     color: "red"
 };
-var deathSquare = {
-    width: 20,
-    height: 200,
-    x: 200,
-    y: 160,
-    color: "blue"
+
+var block = {
+    width: 1450,
+    height: 20,
+    x: 0,
+    y: 600,
+    color: "black"
 };
   
+let fallSpeed = 10;
+
 function updateGameArea() {
+    
     myGameArea.canvas.getContext("2d").clearRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
-    myGameArea.draw(redSquare);
-    myGameArea.draw(deathSquare);
-    if (redSquare.x + 20 > deathSquare.x + 20 & redSquare.y + 20 > deathSquare.y + 20) {
-        redSquare.x = 10;
+
+    myGameArea.draw(player);
+
+    myGameArea.draw(block);
+
+    if (player.y + player.height < block.y){
+        player.y += fallSpeed;
+    } else {
+        ground = true;
+        fallSpeed = 10;
     }
-}  
+}
+
+let downPress = true;
+let upPress = true;
+let leftPress = true;
+let rightPress = true;
+
+document.addEventListener('keyup', (event) => {
+
+    switch(event.key) {
+
+        case "ArrowDown":
+            downPress = false;
+        break;
+        
+        case "ArrowRight":
+            rightPress = false;
+        break;
+
+        case "ArrowUp":
+            upPress = false;
+        break;
+
+        case "ArrowLeft":
+            leftPress = false
+        break;
+    }
+});
 
 document.addEventListener('keydown', (event) => {
     
@@ -53,35 +90,49 @@ document.addEventListener('keydown', (event) => {
     switch(event.key) {
 
         case "ArrowDown":
-            movedown();
+            while(downPress){
+                movedown();
+            }
         break;
         
         case "ArrowRight":
-            moveright();
+            while(downPress){
+                moveright();
+            }
         break;
 
         case "ArrowUp":
-            moveup();
+            while(downPress){
+                moveup();
+            }
         break;
 
         case "ArrowLeft":
-            moveleft()
+            while(downPress){
+                moveleft()
+            }
         break;
     }
 });
-    
+
+let ground = true;
 function moveup() {
-    redSquare.y -= 30;
+
+    if (ground) {
+        player.y -= 120;
+        ground = false;
+        fallSpeed = 5;
+    }
 }
   
 function movedown() {
-    redSquare.y += 30;
+    player.y += 10;
 }
 
 function moveleft() {
-    redSquare.x -= 30;
+    player.x -= 10;
 }
 
 function moveright() {
-    redSquare.x += 30;
+    player.x += 10;
 }
