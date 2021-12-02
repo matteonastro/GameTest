@@ -14,7 +14,8 @@ var myGameArea = {
         this.canvas.height = 700;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval = setInterval(updateGameArea, 20); //ogni 20 ms chiamo il metodo updateGameArea
+
+        this.interval = setInterval(updateGameArea, 20);
       },    
 
     draw: function(component) {
@@ -79,18 +80,22 @@ function updateGameArea() {
     if (player.x + player.width > wallRight.x - 5){
         player.x -= speedRight;
         onWall = true;
+    } else {
+        onWall = false;
     }
 
     if (player.x < wallLeft.x + 30){
         player.x += speedLeft;
         onWall = true;
+    } else {
+        onWall = false;
     }
 
     moveright();
     moveleft();
     movedown();
 
-    if (airTime < 161) {
+    if (airTime < 161){
         jump();
     }
 
@@ -100,7 +105,6 @@ let speedRight = 0;
 let speedLeft = 0;
 let speedUp = 0;
 let speedDown = 0;
-let sprint = 0;
 
 document.addEventListener('keydown', (event) => {
     
