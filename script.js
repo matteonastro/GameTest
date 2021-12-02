@@ -29,9 +29,21 @@ var redSquare = {
     y: 120,
     color: "red"
 };
+var deathSquare = {
+    width: 20,
+    height: 200,
+    x: 200,
+    y: 160,
+    color: "blue"
+};
   
 function updateGameArea() {
+    myGameArea.canvas.getContext("2d").clearRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
     myGameArea.draw(redSquare);
+    myGameArea.draw(deathSquare);
+    if (redSquare.x + 20 > deathSquare.x + 20 & redSquare.y + 20 > deathSquare.y + 20) {
+        redSquare.x = 10;
+    }
 }  
 
 document.addEventListener('keydown', (event) => {
