@@ -37,6 +37,7 @@ function updateGameArea() {
     myGameArea.draw(conveyor);
     myGameArea.draw(spikes);
     myGameArea.draw(spikes2);
+    myGameArea.draw(refill);
 
     gravity();
 
@@ -50,6 +51,8 @@ function updateGameArea() {
     death(spikes);
     death(spikes2);
 
+    refillCollision(refill);
+
     conveyorCollision(conveyor);
 
     bullet.x += bulletSpeed;
@@ -60,6 +63,9 @@ function updateGameArea() {
     
     if (airTime < 161){
         jump();
+    }
+    if (bullet.count < 1) {
+        refill.color = "white";
     }
 
 } 
@@ -127,12 +133,22 @@ function conveyorCollision(boxThing){
     }
 }
 function death(spiker){
-    if ((player.x > spiker.x & player.x + player.width < spiker.x + spiker.width & player.y + player.height > spiker.y)){
+    if ((player.x + player.width > spiker.x & player.x + player.width < spiker.x + spiker.width + 40 & player.y + player.height > spiker.y)){
         player.x = 500;
         player.y = 520;
+        bullet.count = 3;
+        refill.color = "transparent";
     }
 }
-
+function refillCollision(boxThing){
+    if (player.x + player.width > boxThing.x & player.x < (boxThing.x + boxThing.width)){
+        
+        if (player.y + player.height > boxThing.y & bullet.count < 1){
+            bullet.count = 3;
+            refill.color = "transparent";
+        }
+    }
+}
 //GAMEOBJECTS//
 var player = {
     width: 40,
@@ -212,6 +228,13 @@ var spikes2 = {
     x: 1200,
     y: 580,
     color: "black"
+};
+var refill = {
+    width: 60,
+    height: 60,
+    x: 180,
+    y: 500,
+    color: "#650000"
 };
 
 //MOVEMENT//
