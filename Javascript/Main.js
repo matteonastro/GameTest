@@ -34,6 +34,9 @@ function updateGameArea() {
     myGameArea.draw(box2);
     myGameArea.draw(box3);
     myGameArea.draw(bullet);
+    myGameArea.draw(conveyor);
+    myGameArea.draw(spikes);
+    myGameArea.draw(spikes2);
 
     gravity();
 
@@ -44,17 +47,22 @@ function updateGameArea() {
     boxCollision(box2);
     boxCollision(box3);
 
+    death(spikes);
+    death(spikes2);
+
+    conveyorCollision(conveyor);
+
     bullet.x += bulletSpeed;
 
     moveright();
     moveleft();
     movedown();
-
+    
     if (airTime < 161){
         jump();
     }
 
-}
+} 
 
 //COLLISIONS//
 function gravity(){
@@ -68,17 +76,11 @@ function gravity(){
 function wallRightCollision(){
     if (player.x + player.width > wallRight.x - 5){
         player.x -= speedRight;
-        onWall = true;
-    } else {
-        onWall = false;
     }
 }
 function wallLeftCollision(){
     if (player.x < wallLeft.x + 110){
         player.x += speedLeft;
-        onWall = true;
-    } else {
-        onWall = false;
     }
 }
 function boxCollision(boxThing){
@@ -100,6 +102,34 @@ function boxCollision(boxThing){
     }
     if (player.x - 10 < boxWidth & playerHeight > boxThing.y & player.x > boxThing.x){
         player.x += speedLeft;
+    }
+}
+function conveyorCollision(boxThing){
+    if ((player.x + player.width) > boxThing.x & player.x < (boxThing.x + boxThing.width)){
+        
+        if (player.y + player.height > boxThing.y){
+            player.y -= 5;
+            ground = true;
+            airTime = 0;
+        }
+    }
+    let playerWidth = player.x + player.width +5;
+    let boxWidth = boxThing.x + boxThing.width;
+    let playerHeight = player.y + player.height
+
+    if (playerWidth > boxThing.x & playerHeight > boxThing.y & player.x < boxWidth){
+        player.x -= speedRight;
+        airTime = 0;
+    }
+    if (player.x - 10 < boxWidth & playerHeight > boxThing.y & player.x > boxThing.x){
+        player.x += speedLeft;
+        airTime = 0;
+    }
+}
+function death(spiker){
+    if ((player.x > spiker.x & player.x + player.width < spiker.x + spiker.width & player.y + player.height > spiker.y)){
+        player.x = 500;
+        player.y = 520;
     }
 }
 
@@ -161,6 +191,27 @@ let bullet = {
     width: 10,
     height: 10,
     color: "yellow"
+};
+var conveyor = {
+    width: 40,
+    height: 180,
+    x: 300,
+    y: 420,
+    color: "darkgrey"
+};
+var spikes = {
+    width: 200,
+    height: 20,
+    x: 100,
+    y: 580,
+    color: "black"
+};
+var spikes2 = {
+    width: 150,
+    height: 20,
+    x: 1200,
+    y: 580,
+    color: "black"
 };
 
 //MOVEMENT//
