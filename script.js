@@ -1,7 +1,6 @@
 function startGame() {
 
     myGameArea.start();
-    myGameArea.draw(player);
     
 }
   
@@ -19,7 +18,7 @@ var myGameArea = {
       },    
 
     draw: function(component) {
-        this.context.fillStyle = component.color;
+        this.context.fillStyle =  component.color;
         this.context.fillRect(component.x, component.y, component.width, component.height);
     }
 }
@@ -32,7 +31,6 @@ var player = {
     color: "red",
     facing: "RIGHT"
 };
-
 var block = {
     width: 1450,
     height: 20,
@@ -40,7 +38,6 @@ var block = {
     y: 600,
     color: "black"
 };
-
 var wallLeft = {
     width: 20,
     height: 300,
@@ -55,9 +52,16 @@ var wallRight = {
     y: 300,
     color: "blue"
 };
+
+var box = {
+    width: 80,
+    height: 80,
+    x: 800,
+    y: 520,
+    color: "pink"
+};
   
 let fallSpeed = 10;
-
 let onWall = false;
 
 function updateGameArea() {
@@ -68,6 +72,7 @@ function updateGameArea() {
     myGameArea.draw(wallLeft);
     myGameArea.draw(wallRight);
     myGameArea.draw(block);
+    myGameArea.draw(box);
 
     if (player.y + player.height < block.y){
         player.y += fallSpeed;
@@ -89,6 +94,25 @@ function updateGameArea() {
         onWall = true;
     } else {
         onWall = false;
+    }
+
+    if (player.x + player.width + 10 > box.x & player.x < box.x + box.width & player.y + player.height > box.y) {
+        
+        player.x -= speedRight;
+    }
+
+    if (player.x < box.x + box.width  + 10 & player.x > box.x & player.y + player.height > box.y) {
+        
+        player.x += speedLeft;
+    }
+
+    if (player.x + player.width > box.x & player.x < box.x + box.width & player.y + player.height > box.y) {
+        
+        player.y = box.y - box.height;
+        ground = true;
+        airTime = 0;
+        moveright();
+        moveleft();
     }
 
     moveright();
