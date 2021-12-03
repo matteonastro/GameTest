@@ -106,7 +106,7 @@ function updateGameArea() {
         player.x += speedLeft;
     }
 
-    if (player.x + player.width > box.x & player.x < box.x + box.width & player.y + player.height > box.y) {
+    if (player.x > box.x & player.x < box.x + box.width & player.y + player.height > box.y) {
         
         player.y = box.y - box.height;
         ground = true;
