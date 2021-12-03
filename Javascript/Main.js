@@ -14,12 +14,12 @@ var myGameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
         this.interval = setInterval(updateGameArea, 20);
-      },    
+    },    
 
     draw: function(component) {
         this.context.fillStyle =  component.color;
         this.context.fillRect(component.x, component.y, component.width, component.height);
-    }
+    },
 }
 
 function updateGameArea() {
@@ -33,6 +33,7 @@ function updateGameArea() {
     myGameArea.draw(box1);
     myGameArea.draw(box2);
     myGameArea.draw(box3);
+    myGameArea.draw(bullet);
 
     gravity();
 
@@ -42,6 +43,8 @@ function updateGameArea() {
     boxCollision(box1);
     boxCollision(box2);
     boxCollision(box3);
+
+    bullet.x += bulletSpeed;
 
     moveright();
     moveleft();
@@ -59,7 +62,6 @@ function gravity(){
         player.y += fallSpeed;
     } else {
         ground = true;
-        fallSpeed = 10;
         airTime = 0;
     }
 }
@@ -72,7 +74,7 @@ function wallRightCollision(){
     }
 }
 function wallLeftCollision(){
-    if (player.x < wallLeft.x + 30){
+    if (player.x < wallLeft.x + 110){
         player.x += speedLeft;
         onWall = true;
     } else {
@@ -112,52 +114,61 @@ var player = {
 };
 var block = {
     width: 1450,
-    height: 20,
+    height: 300,
     x: 0,
     y: 600,
-    color: "black"
+    color: "#760000"
 };
 var wallLeft = {
-    width: 20,
-    height: 300,
-    x: 200,
-    y: 300,
-    color: "blue"
+    width: 100,
+    height: 1000,
+    x: 0,
+    y: 0,
+    color: "#760000"
 };
 var wallRight = {
-    width: 20,
-    height: 300,
-    x: 1200,
-    y: 300,
-    color: "blue"
+    width: 100,
+    height: 1000,
+    x: 1350,
+    y: 0,
+    color: "#760000"
 };
 var box1 = {
     width: 80,
     height: 80,
     x: 800,
     y: 520,
-    color: "pink"
+    color: "darkred"
 };
 var box2 = {
     width: 180,
     height: 120,
     x: 880,
     y: 480,
-    color: "pink"
+    color: "darkred"
 };
 var box3 = {
     width: 140,
     height: 40,
     x: 1060,
     y: 560,
-    color: "pink"
+    color: "darkred"
+};
+let bullet = {
+    count: 3,
+    x: 0,
+    y: 0,
+    width: 10,
+    height: 10,
+    color: "yellow"
 };
 
 //MOVEMENT//
-let fallSpeed = 10;
+let fallSpeed = 5;
 let onWall = false;
 let ground = true;
 let airTime = 0;
+let bulletSpeed;
 
 let speedRight = 0;
 let speedLeft = 0;
@@ -171,25 +182,26 @@ document.addEventListener('keydown', (event) => {
     switch(event.key) {
 
         case "ArrowDown":
-            speedDown = 0;
-            
+            speedDown = 0; 
         break;
         
         case "ArrowRight":
             speedRight = 10;
             player.facing = "RIGHT"
-            
         break;
 
         case "a":
             speedUp = 15;
-            
         break;
 
         case "ArrowLeft":
             speedLeft = 10;
             player.facing = "LEFT"
-            
+        break;
+
+        case "s":
+            shoot();
+            bullet.count--;
         break;
     }
 });
@@ -225,7 +237,6 @@ function jump() {
 
     player.y -= speedUp;
     ground = false;
-    fallSpeed = 5;
     airTime += speedUp;
 }
 function movedown() {
@@ -236,4 +247,16 @@ function moveleft() {
 }
 function moveright() {
     player.x += speedRight;
+}
+function shoot(){
+    if (bullet.count > 0){
+        if (player.facing == "RIGHT"){
+            bullet.x = player.x + player.width + 5;
+            bulletSpeed = 20;
+        } else {
+            bullet.x = player.x - 15;
+            bulletSpeed = (-20);
+        }
+        bullet.y = player.y + 20;
+    }
 }
