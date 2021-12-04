@@ -33,6 +33,7 @@ function updateGameArea() {
     myGameArea.draw(box1);
     myGameArea.draw(box2);
     myGameArea.draw(box3);
+    myGameArea.draw(box4);
 
     myGameArea.draw(bullet);
 
@@ -55,6 +56,7 @@ function updateGameArea() {
     newBoxCollision(box1);
     newBoxCollision(box2);
     newBoxCollision(box3);
+    newBoxCollision(box4);
 
     death(spikes);
 
@@ -225,6 +227,7 @@ var player = {
     color: "red",
     facing: "RIGHT"
 };
+
 var block = {
     width: 1450,
     height: 300,
@@ -246,6 +249,7 @@ var wallRight = {
     y: 0,
     color: "#760000"
 };
+
 var box1 = {
     width: 80,
     height: 80,
@@ -267,14 +271,14 @@ var box3 = {
     y: 540,
     color: "darkred"
 };
-let bullet = {
-    count: 3,
-    x: 0,
-    y: 0,
-    width: 10,
-    height: 10,
-    color: "yellow"
+var box4 = {
+    width: 120,
+    height: 40,
+    x: 560,
+    y: 80,
+    color: "darkred"
 };
+
 var conveyor1 = {
     width: 40,
     height: 100,
@@ -296,6 +300,7 @@ var conveyor3 = {
     y: 400,
     color: "darkgrey"
 };
+
 var spikes = {
     width: 2000,
     height: 20,
@@ -309,6 +314,14 @@ var refill = {
     x: 180,
     y: 500,
     color: "#650000"
+};
+let bullet = {
+    count: 3,
+    x: 0,
+    y: 0,
+    width: 10,
+    height: 10,
+    color: "yellow"
 };
 
 //MOVEMENT//
