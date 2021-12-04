@@ -127,7 +127,6 @@ function oldBoxCollision(boxThing){
     }
 } // ^ BROKEN ^ // Keeping this for references
 function newBoxCollision(box){
-
     let playerWidth = player.x + player.width + 5;
     let playerHeight = player.y + player.height;
     let boxWidth = box.x + box.width + 5;
@@ -136,6 +135,13 @@ function newBoxCollision(box){
     if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x){
             player.x -= speedRight;
+
+            if (grab){
+                player.y -= 5;
+                airTime = 0;
+                onWall = true;
+            }
+
             if (playerWidth > box.x + 5) {
                 player.x -= 10;
             }
@@ -144,11 +150,19 @@ function newBoxCollision(box){
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
             player.x += speedLeft;
+
+            if (grab){
+                player.y -= 5;
+                airTime = 0;
+                onWall = true;
+            }
+
             if (player.x < boxWidth - 5) {
                 player.x += 10;
             }
         }
     }
+
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 20){
             player.y = boxHeight + 20;
@@ -173,6 +187,8 @@ function conveyorCollision(box){
        if (playerWidth > box.x){
             player.x -= speedRight;
             airTime = 0;
+            onWall = true;
+
             if (playerWidth > box.x + 5) {
                 player.x -= 10;
             }
@@ -182,11 +198,14 @@ function conveyorCollision(box){
         if (player.x < boxWidth){
             player.x += speedLeft;
             airTime = 0;
+            onWall = true;
+
             if (player.x < boxWidth - 5) {
                 player.x += 10;
             }
         }
     }
+
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 20){
             player.y = boxHeight + 20;
@@ -330,6 +349,8 @@ let onWall = false;
 let ground = true;
 let airTime = 0;
 let bulletSpeed;
+let grab = false;
+
 
 let speedRight = 0;
 let speedLeft = 0;
@@ -366,7 +387,7 @@ document.addEventListener('keydown', (event) => {
         break;
 
         case "s":
-            //SLASH
+            grab = true;
         break;
     }
 });
@@ -394,12 +415,28 @@ document.addEventListener('keyup', (event) => {
             speedLeft = 0;
             
         break;
+
+        case "s":
+            grab = false;
+        break;
     }
 });
 function jump() {
 
     player.y -= speedUp;
     airTime += speedUp;
+    //if (onWall){
+    //    if (player.facing == "RIGHT"){
+    //        player.x -= 10;
+    //        
+    //    } else {
+    //        player.x += 10;
+    //    }
+    //    speedLeft = 0;
+    //    speedRight = 0;
+    //    
+    //}
+    //Wall jumping (BROKEN)
 }
 function movedown() {
     player.y += speedDown;
