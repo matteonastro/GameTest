@@ -18,7 +18,7 @@ var myGameArea = {
 
     draw: function(component) {
         this.context.fillStyle =  component.color;
-        this.context.fillRect(component.x, component.y, component.width, component.height);
+        this.context.fillRect(component.x, component.y, component.width, component.height + 5);
     },
 }
 
@@ -26,43 +26,55 @@ function updateGameArea() {
     
     myGameArea.canvas.getContext("2d").clearRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
 
+    //Drawers
+    myGameArea.draw(refill);
     myGameArea.draw(player);
-    myGameArea.draw(wallLeft);
-    myGameArea.draw(wallRight);
-    myGameArea.draw(block);
+
     myGameArea.draw(box1);
     myGameArea.draw(box2);
     myGameArea.draw(box3);
-    myGameArea.draw(bullet);
-    myGameArea.draw(conveyor);
-    myGameArea.draw(spikes);
-    myGameArea.draw(spikes2);
-    myGameArea.draw(refill);
 
+    myGameArea.draw(bullet);
+
+    myGameArea.draw(conveyor1);
+    myGameArea.draw(conveyor2);
+    myGameArea.draw(conveyor3);
+    
+    myGameArea.draw(spikes);
+
+    myGameArea.draw(wallLeft);
+    myGameArea.draw(wallRight);
+    myGameArea.draw(block);
+
+    //Methods
     gravity();
 
     wallRightCollision();
     wallLeftCollision();
 
-    boxCollision(box1);
-    boxCollision(box2);
-    boxCollision(box3);
+    newBoxCollision(box1);
+    newBoxCollision(box2);
+    newBoxCollision(box3);
 
     death(spikes);
-    death(spikes2);
 
     refillCollision(refill);
 
-    conveyorCollision(conveyor);
-
-    bullet.x += bulletSpeed;
+    conveyorCollision(conveyor1);
+    conveyorCollision(conveyor2);
+    conveyorCollision(conveyor3);
 
     moveright();
     moveleft();
     movedown();
     
+    //Others
+    bullet.x += bulletSpeed;
+
     if (airTime < 161){
-        jump();
+        if (ground || onWall){
+            jump();
+        }
     }
     if (bullet.count < 1) {
         refill.color = "white";
@@ -82,14 +94,16 @@ function gravity(){
 function wallRightCollision(){
     if (player.x + player.width > wallRight.x - 5){
         player.x -= speedRight;
-    }
+        onWall = true;
+    } else {onWall = false;}
 }
 function wallLeftCollision(){
     if (player.x < wallLeft.x + 110){
         player.x += speedLeft;
-    }
+        onWall = true;
+    } else {onWall = false;}
 }
-function boxCollision(boxThing){
+function oldBoxCollision(boxThing){
     if ((player.x + player.width) > boxThing.x & player.x < (boxThing.x + boxThing.width)){
         
         if (player.y + player.height > boxThing.y){
@@ -103,39 +117,91 @@ function boxCollision(boxThing){
     let boxWidth = boxThing.x + boxThing.width;
     let playerHeight = player.y + player.height
 
-    if (playerWidth > boxThing.x & playerHeight > boxThing.y & player.x < boxWidth){
+    if (playerWidth > boxThing.x & playerHeight > boxThing.y & player.x < boxWidth & player.y < boxThing.y + boxThing.width){
         player.x -= speedRight;
     }
-    if (player.x - 10 < boxWidth & playerHeight > boxThing.y & player.x > boxThing.x){
+    if (player.x - 10 < boxWidth & playerHeight > boxThing.y & player.x > boxThing.x & player.y < boxThing.y + boxThing.width){
         player.x += speedLeft;
     }
-}
-function conveyorCollision(boxThing){
-    if ((player.x + player.width) > boxThing.x & player.x < (boxThing.x + boxThing.width)){
-        
-        if (player.y + player.height > boxThing.y){
+} // ^ BROKEN ^ // Keeping this for references
+function newBoxCollision(box){
+
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+            player.x -= speedRight;
+            if (playerWidth > box.x + 5) {
+                player.x -= 10;
+            }
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            player.x += speedLeft;
+            if (player.x < boxWidth - 5) {
+                player.x += 10;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 20){
+            player.y = boxHeight + 20;
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
             player.y -= 5;
             ground = true;
             airTime = 0;
         }
-    }
-    let playerWidth = player.x + player.width +5;
-    let boxWidth = boxThing.x + boxThing.width;
-    let playerHeight = player.y + player.height
+    }    
+} // ^ NOT BROKEN ^ // Jesus finally, coding god :trollblur:
+function conveyorCollision(box){
 
-    if (playerWidth > boxThing.x & playerHeight > boxThing.y & player.x < boxWidth){
-        player.x -= speedRight;
-        airTime = 0;
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+            player.x -= speedRight;
+            airTime = 0;
+            if (playerWidth > box.x + 5) {
+                player.x -= 10;
+            }
+        }
     }
-    if (player.x - 10 < boxWidth & playerHeight > boxThing.y & player.x > boxThing.x){
-        player.x += speedLeft;
-        airTime = 0;
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            player.x += speedLeft;
+            airTime = 0;
+            if (player.x < boxWidth - 5) {
+                player.x += 10;
+            }
+        }
     }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 20){
+            player.y = boxHeight + 20;
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            player.y -= 5;
+            ground = true;
+            airTime = 0;
+        }
+    } 
 }
 function death(spiker){
     if ((player.x + player.width > spiker.x & player.x + player.width < spiker.x + spiker.width + 40 & player.y + player.height > spiker.y)){
-        player.x = 500;
-        player.y = 520;
+        player.x = 950;
+        player.y = 370;
         bullet.count = 3;
         refill.color = "transparent";
     }
@@ -149,12 +215,13 @@ function refillCollision(boxThing){
         }
     }
 }
+
 //GAMEOBJECTS//
 var player = {
     width: 40,
     height: 80,
-    x: 500,
-    y: 520,
+    x: 950,
+    y: 370,
     color: "red",
     facing: "RIGHT"
 };
@@ -183,21 +250,21 @@ var box1 = {
     width: 80,
     height: 80,
     x: 800,
-    y: 520,
+    y: 500,
     color: "darkred"
 };
 var box2 = {
     width: 180,
     height: 120,
     x: 880,
-    y: 480,
+    y: 460,
     color: "darkred"
 };
 var box3 = {
     width: 140,
     height: 40,
     x: 1060,
-    y: 560,
+    y: 540,
     color: "darkred"
 };
 let bullet = {
@@ -208,24 +275,31 @@ let bullet = {
     height: 10,
     color: "yellow"
 };
-var conveyor = {
+var conveyor1 = {
+    width: 40,
+    height: 100,
+    x: 600,
+    y: 200,
+    color: "darkgrey"
+};
+var conveyor2 = {
+    width: 40,
+    height: 160,
+    x: 200,
+    y: 40,
+    color: "darkgrey"
+};
+var conveyor3 = {
     width: 40,
     height: 180,
     x: 300,
-    y: 420,
+    y: 400,
     color: "darkgrey"
 };
 var spikes = {
-    width: 200,
+    width: 2000,
     height: 20,
     x: 100,
-    y: 580,
-    color: "black"
-};
-var spikes2 = {
-    width: 150,
-    height: 20,
-    x: 1200,
     y: 580,
     color: "black"
 };
@@ -256,7 +330,7 @@ document.addEventListener('keydown', (event) => {
     switch(event.key) {
 
         case "ArrowDown":
-            speedDown = 0; 
+            speedDown = 0;
         break;
         
         case "ArrowRight":
@@ -273,9 +347,13 @@ document.addEventListener('keydown', (event) => {
             player.facing = "LEFT"
         break;
 
-        case "s":
+        case "d":
             shoot();
             bullet.count--;
+        break;
+
+        case "s":
+            //SLASH
         break;
     }
 });
@@ -287,7 +365,6 @@ document.addEventListener('keyup', (event) => {
 
         case "ArrowDown":
             speedDown = 0;
-            
         break;
         
         case "ArrowRight":
@@ -306,11 +383,9 @@ document.addEventListener('keyup', (event) => {
         break;
     }
 });
-
 function jump() {
 
     player.y -= speedUp;
-    ground = false;
     airTime += speedUp;
 }
 function movedown() {
