@@ -87,7 +87,11 @@ function updateGameArea() {
             jump();
         }
     }
-
+    if (airTime < 10){
+        player.color = "red";
+    } else {
+        player.color = "cyan";
+    }
 } 
 let levelIndex = 1;
 let loadedLevel = 2;
@@ -160,15 +164,15 @@ function lvl3(){
         player.y = 400
     }
 
+    myGameArea.draw(lvl3FakeBox1);
+    myGameArea.draw(lvl3FakeBox2);
+    myGameArea.draw(lvl3FakeBox3);
     myGameArea.draw(player);
     myGameArea.draw(lvl3Box1);
     myGameArea.draw(lvl3Conveyor1);
     myGameArea.draw(lvl3Conveyor2);
     myGameArea.draw(lvl3Mover);
     myGameArea.draw(lvl3Mover2);
-    myGameArea.draw(lvl3FakeBox1);
-    myGameArea.draw(lvl3FakeBox2);
-    myGameArea.draw(lvl3FakeBox3);
     myGameArea.draw(lvl3Lava);
     myGameArea.draw(lvl3LavaSwitch);
     myGameArea.draw(lvl3Pass);
@@ -341,12 +345,7 @@ function conveyorCollision(box){
 }
 function death(spiker){
     if ((player.x + player.width > spiker.x & player.x + player.width < spiker.x + spiker.width + 40 & player.y + player.height > spiker.y)){
-        player.x = player.checkPoint.X;
-        player.y = player.checkPoint.Y;
-        lvl2Key1.color = "cyan";
-        lvl2Lock1.y = 0;
-        lvl3Lava.y = 0;
-        lvl3LavaSwitch. color = "orange"
+        deathReset();
     }
 }
 function lvlPassCollision(box){
@@ -423,12 +422,6 @@ function verticalMoverCollision(box){
        if (playerWidth > box.x){
             player.x -= speedRight;
 
-            if (grab){
-                player.y -= 5;
-                airTime = 0;
-                onWall = true;
-            }
-
             if (playerWidth > box.x + 5) {
                 player.x -= 10;
             }
@@ -437,12 +430,6 @@ function verticalMoverCollision(box){
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
             player.x += speedLeft;
-
-            if (grab){
-                player.y -= 5;
-                airTime = 0;
-                onWall = true;
-            }
 
             if (player.x < boxWidth - 5) {
                 player.x += 10;
@@ -455,7 +442,7 @@ function verticalMoverCollision(box){
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
-        if (playerHeight > box.y -1){
+        if (playerHeight > box.y){
             player.y -= 15;
             ground = true;
             airTime = 0;
@@ -468,7 +455,7 @@ function horizontalMoverCollision(box){
     let boxWidth = box.x + box.width + 5;
     let boxHeight = box.y + box.height;
 
-    box.x -= 7;
+    box.x -= 8;
     if (box.x < 400){
         box.x = 900;
     }
@@ -476,32 +463,11 @@ function horizontalMoverCollision(box){
 
     if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x){
-            player.x -= speedRight;
-
-            if (grab){
-                player.y -= 5;
-                airTime = 0;
-                onWall = true;
-            }
-
-            if (playerWidth > box.x + 5) {
-                player.x -= 10;
-            }
+           player.y += 10;
         }
     }
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
-            player.x += speedLeft;
-
-            if (grab){
-                player.y -= 5;
-                airTime = 0;
-                onWall = true;
-            }
-
-            if (player.x < boxWidth - 5) {
-                player.x += 10;
-            }
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
@@ -525,27 +491,22 @@ function lavaCollision(box){
 
     if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x + 5){
-           
-            player.x = 160;
-            player.y = 400
+           deathReset();
         }
     }
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth - 5){
-            player.x = 160;
-            player.y = 400
+            deathReset();
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 10){
-            player.x = 160;
-            player.y = 400
+            deathReset();
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
-            player.x = 160;
-            player.y = 400
+            deathReset();
         }
     }    
 }
@@ -611,6 +572,14 @@ function lavaSwitchCollision(box, lock){
         }
     } 
 }
+function deathReset(){
+    player.x = player.checkPoint.X;
+    player.y = player.checkPoint.Y;
+    lvl2Key1.color = "cyan";
+    lvl2Lock1.y = 0;
+    lvl3Lava.y = 0;
+    lvl3LavaSwitch. color = "orange"
+}
 
 //GAMEOBJECTS//
 var player = {
@@ -671,7 +640,7 @@ var lvl3FakeBox1 = {
     width: 150,
     height: 30,
     x: 900,
-    y: 165,
+    y: 125,
     color: "#6D2727"
 }
 var lvl3FakeBox2 = {
@@ -687,7 +656,7 @@ var lvl3FakeBox3 = {
     width: 150,
     height: 30,
     x: 410,
-    y: 165,
+    y: 125,
     color: "#6D2727"
 }
 var lvl3Conveyor1 = {
@@ -716,8 +685,8 @@ var lvl3Mover2 = {
     
     width: 160,
     height: 40,
-    x: 700,
-    y: 160,
+    x: 400,
+    y: 120,
     color: "darkred"
 }
 var lvl3Lava = {
@@ -874,6 +843,7 @@ let ground = true;
 let airTime = 0;
 let bulletSpeed;
 let grab = false;
+let umbrella = false;
 
 let speedRight = 0;
 let speedLeft = 0;
@@ -891,7 +861,9 @@ document.addEventListener('keydown', (event) => {
         break;
         
         case "ArrowRight":
-            speedRight = 10;
+            if (speedRight < 10){
+                speedRight += 2;
+            }
             player.facing = "RIGHT"
         break;
 
@@ -900,14 +872,14 @@ document.addEventListener('keydown', (event) => {
         break;
 
         case "ArrowLeft":
-            speedLeft = 10;
+            if (speedLeft < 10){
+                speedLeft += 2;
+            }
             player.facing = "LEFT"
         break;
 
-        break;
-
         case "s":
-            grab = true;
+            umbrella = true;
         break;
     }
 });
@@ -937,7 +909,7 @@ document.addEventListener('keyup', (event) => {
         break;
 
         case "s":
-            grab = false;
+            umbrella = false;
         break;
     }
 });
