@@ -5,7 +5,7 @@ function startGame() {
   
 var myGameArea = {
     
-    canvas : document.createElement("canvas"),
+    canvas: document.createElement("canvas"),
 
     start: function() {
         this.canvas.width = 1450;
@@ -93,8 +93,8 @@ function updateGameArea() {
         player.color = "cyan";
     }
 } 
-let levelIndex = 4;
-let loadedLevel = 4;
+let levelIndex = 1;
+let loadedLevel = 2;
 
 function lvl1(){
 
@@ -438,7 +438,7 @@ function verticalMoverCollision(box){
     let boxHeight = box.y + box.height;
 
     box.y -= 5;
-    if (box.y < 200){
+    if (box.y < 160){
         box.y = 600;
     }
 
@@ -734,7 +734,7 @@ var lvl3FakeBox2 = {
     width: 150,
     height: 30,
     x: 1205,
-    y: 210,
+    y: 170,
     color: "#6D2727"
 }
 var lvl3FakeBox3 = {
