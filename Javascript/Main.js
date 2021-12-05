@@ -165,11 +165,20 @@ function lvl3(){
     myGameArea.draw(lvl3Conveyor1);
     myGameArea.draw(lvl3Conveyor2);
     myGameArea.draw(lvl3Mover);
+    myGameArea.draw(lvl3Mover2);
+    myGameArea.draw(lvl3FakeBox1);
+    myGameArea.draw(lvl3FakeBox2);
+    myGameArea.draw(lvl3FakeBox3);
+    myGameArea.draw(lvl3Lava);
+    myGameArea.draw(lvl3LavaSwitch);
 
     newBoxCollision(lvl3Box1);
-    moverCollision(lvl3Mover);
+    verticalMoverCollision(lvl3Mover);
+    horizontalMoverCollision(lvl3Mover2);
     conveyorCollision(lvl3Conveyor1);
     conveyorCollision(lvl3Conveyor2);
+    lavaCollision(lvl3Lava);
+    keyCollectionCollision(lvl3LavaSwitch, lvl3Lava);
 }
 function lvl4(){
     
@@ -393,13 +402,13 @@ function keyCollectionCollision(box, lock){
         }
     } 
 }
-function moverCollision(box){
+function verticalMoverCollision(box){
     let playerWidth = player.x + player.width + 5;
     let playerHeight = player.y + player.height;
     let boxWidth = box.x + box.width + 5;
     let boxHeight = box.y + box.height;
 
-    box.y -= 10;
+    box.y -= 5;
     if (box.y < 200){
         box.y = 600;
     }
@@ -441,11 +450,129 @@ function moverCollision(box){
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y -1){
-            player.y -= 20;
+            player.y -= 15;
             ground = true;
             airTime = 0;
         }
     }
+}
+function horizontalMoverCollision(box){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    box.x -= 5;
+    if (box.x < 400){
+        box.x = 900;
+    }
+
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+            player.x -= speedRight;
+
+            if (grab){
+                player.y -= 5;
+                airTime = 0;
+                onWall = true;
+            }
+
+            if (playerWidth > box.x + 5) {
+                player.x -= 10;
+            }
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            player.x += speedLeft;
+
+            if (grab){
+                player.y -= 5;
+                airTime = 0;
+                onWall = true;
+            }
+
+            if (player.x < boxWidth - 5) {
+                player.x += 10;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 10){
+            player.y = boxHeight + 10;
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y -1){
+            player.y -= 5;
+            ground = true;
+            airTime = 0;
+        }
+    }
+}
+function lavaCollision(box){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x + 5){
+           
+            player.x = 160;
+            player.y = 400
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth - 5){
+            player.x = 160;
+            player.y = 400
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 10){
+            player.x = 160;
+            player.y = 400
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            player.x = 160;
+            player.y = 400
+        }
+    }    
+}
+function keyCollectionCollision(box, lock){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+           lock.y = -200;
+           box.color = "transparent";
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            lock.y = -200;
+            box.color = "transparent";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 20){
+            lock.y = -200;
+            box.color = "transparent";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            lock.y = -200;
+            box.color = "transparent";
+        }
+    } 
 }
 
 //GAMEOBJECTS//
@@ -502,11 +629,35 @@ var lvl3Box1 = {
     y: 520,
     color: "darkred"
 }
+var lvl3FakeBox1 = {
+    
+    width: 150,
+    height: 30,
+    x: 900,
+    y: 165,
+    color: "#6D2727"
+}
+var lvl3FakeBox2 = {
+    
+    width: 150,
+    height: 30,
+    x: 1205,
+    y: 210,
+    color: "#6D2727"
+}
+var lvl3FakeBox3 = {
+    
+    width: 150,
+    height: 30,
+    x: 410,
+    y: 165,
+    color: "#6D2727"
+}
 var lvl3Conveyor1 = {
     width: 40,
     height: 300,
     x: 300,
-    y: 350,
+    y: 420,
     color: "darkgrey"
 };
 var lvl3Conveyor2 = {
@@ -523,6 +674,30 @@ var lvl3Mover = {
     x: 1200,
     y: 500,
     color: "darkred"
+}
+var lvl3Mover2 = {
+    
+    width: 160,
+    height: 40,
+    x: 700,
+    y: 160,
+    color: "darkred"
+}
+var lvl3Lava = {
+    
+    width: 40,
+    height: 300,
+    x: 700,
+    y: 0,
+    color: "#FF7000"
+}
+var lvl3LavaSwitch = {
+    
+    width: 50,
+    height: 50,
+    x: 1200,
+    y: 400,
+    color: "orange"
 }
 
 // LEVEL TWO \\
