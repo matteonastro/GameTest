@@ -89,8 +89,8 @@ function updateGameArea() {
     }
 
 } 
-let levelIndex = 3;
-let loadedLevel = 3;
+let levelIndex = 1;
+let loadedLevel = 2;
 
 function lvl1(){
 
@@ -171,17 +171,19 @@ function lvl3(){
     myGameArea.draw(lvl3FakeBox3);
     myGameArea.draw(lvl3Lava);
     myGameArea.draw(lvl3LavaSwitch);
+    myGameArea.draw(lvl3Pass);
 
+    lvlPassCollision(lvl3Pass);
     newBoxCollision(lvl3Box1);
     verticalMoverCollision(lvl3Mover);
     horizontalMoverCollision(lvl3Mover2);
     conveyorCollision(lvl3Conveyor1);
     conveyorCollision(lvl3Conveyor2);
     lavaCollision(lvl3Lava);
-    keyCollectionCollision(lvl3LavaSwitch, lvl3Lava);
+    lavaSwitchCollision(lvl3LavaSwitch, lvl3Lava);
 }
 function lvl4(){
-    
+    alert("DEMO END this is gonna be spammed cause im too lazy xd so just close the window");
 }
 function lvl5(){
     
@@ -332,6 +334,8 @@ function conveyorCollision(box){
         if (playerHeight > box.y - 1){
             player.x = player.checkPoint.X;
             player.y = player.checkPoint.Y;
+            lvl3Lava.y = 0;
+            lvl3LavaSwitch. color = "orange"
         }
     } 
 }
@@ -341,6 +345,8 @@ function death(spiker){
         player.y = player.checkPoint.Y;
         lvl2Key1.color = "cyan";
         lvl2Lock1.y = 0;
+        lvl3Lava.y = 0;
+        lvl3LavaSwitch. color = "orange"
     }
 }
 function lvlPassCollision(box){
@@ -398,7 +404,7 @@ function keyCollectionCollision(box, lock){
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
             lock.y = -200;
-            box.color = "transparent";
+            box.color = "transparent"; 
         }
     } 
 }
@@ -462,7 +468,7 @@ function horizontalMoverCollision(box){
     let boxWidth = box.x + box.width + 5;
     let boxHeight = box.y + box.height;
 
-    box.x -= 5;
+    box.x -= 7;
     if (box.x < 400){
         box.x = 900;
     }
@@ -570,6 +576,37 @@ function keyCollectionCollision(box, lock){
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
             lock.y = -200;
+            box.color = "transparent";
+        }
+    } 
+}
+function lavaSwitchCollision(box, lock){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+           lock.y = 400;
+           box.color = "transparent";
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            lock.y = 400;
+            box.color = "transparent";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 20){
+            lock.y = 400;
+            box.color = "transparent";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            lock.y = 400;
             box.color = "transparent";
         }
     } 
@@ -695,10 +732,18 @@ var lvl3LavaSwitch = {
     
     width: 50,
     height: 50,
-    x: 1200,
-    y: 400,
+    x: 1250,
+    y: 40,
     color: "orange"
 }
+var lvl3Pass = {
+    width: 60,
+    height: 60,
+    x: 200,
+    y: 100,
+    color: "white",
+    nextLevel: 4
+};
 
 // LEVEL TWO \\
 var lvl2Box1 = {
@@ -811,7 +856,7 @@ var spikes = {
     height: 20,
     x: 100,
     y: 580,
-    color: "black"
+    color: "#FF7000"
 };
 var lvl1Pass = {
     width: 60,
