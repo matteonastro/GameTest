@@ -93,8 +93,8 @@ function updateGameArea() {
         player.color = "cyan";
     }
 } 
-let levelIndex = 1;
-let loadedLevel = 2;
+let levelIndex = 4;
+let loadedLevel = 4;
 
 function lvl1(){
 
@@ -187,7 +187,31 @@ function lvl3(){
     lavaSwitchCollision(lvl3LavaSwitch, lvl3Lava);
 }
 function lvl4(){
-    alert("DEMO END this is gonna be spammed cause im too lazy xd so just close the window");
+
+    if (loadedLevel == 4){
+        loadedLevel++;
+        player.checkPoint.X = 160;
+        player.checkPoint.Y = 400;
+        player.x = 160;
+        player.y = 400
+
+        spikes.color = "#595959"
+        block.color = "#3D3D3D"
+        wallLeft.color = "#3D3D3D"
+        wallRight.color = "#3D3D3D"
+
+       
+    }
+    
+    myGameArea.canvas.getContext("2d").fillStyle = "#292929";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+
+    myGameArea.draw(player);
+    myGameArea.draw(lvl4Box1);
+    myGameArea.draw(lvl4Fan1);
+
+    newBoxCollision(lvl4Box1);
+    fanCollision(lvl4Fan1);
 }
 function lvl5(){
     
@@ -580,6 +604,50 @@ function deathReset(){
     lvl3Lava.y = 0;
     lvl3LavaSwitch. color = "orange"
 }
+function fanCollision(box){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+            player.x -= speedRight;
+
+            if (playerWidth > box.x + 5) {
+                player.x -= 10;
+            }
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            player.x += speedLeft;
+
+            if (player.x < boxWidth - 5) {
+                player.x += 10;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 10){
+            player.y = boxHeight + 10;
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (umbrella){
+            if (airTime > 0){
+                if (airTime > 161){            
+                    player.y -= 10; 
+                }
+            } else if (airTime < 1){ 
+                player.y -= 10; 
+            }
+        }
+        if (playerHeight > box.y - 1){
+            deathReset();
+        }
+    } 
+} 
 
 //GAMEOBJECTS//
 var player = {
@@ -622,6 +690,24 @@ var wallRight = {
     y: 0,
     color: "#760000"
 };
+
+// LEVEL FOUR \\
+
+var lvl4Box1 = {
+    
+    width: 160,
+    height: 60,
+    x: 100,
+    y: 520,
+    color: "grey"
+}
+var lvl4Fan1 = {
+    width: 80,
+    height: 60,
+    x: 300,
+    y: 540,
+    color: "green"
+}
 
 // LEVEL THREE \\
 
@@ -861,9 +947,7 @@ document.addEventListener('keydown', (event) => {
         break;
         
         case "ArrowRight":
-            if (speedRight < 10){
-                speedRight += 2;
-            }
+            speedRight = 10;
             player.facing = "RIGHT"
         break;
 
@@ -872,9 +956,7 @@ document.addEventListener('keydown', (event) => {
         break;
 
         case "ArrowLeft":
-            if (speedLeft < 10){
-                speedLeft += 2;
-            }
+            speedLeft = 10;
             player.facing = "LEFT"
         break;
 
