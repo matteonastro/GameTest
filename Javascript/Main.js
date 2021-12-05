@@ -35,6 +35,38 @@ function updateGameArea() {
             lvl2();
         break;
 
+        case 3:
+            lvl3();
+        break;
+
+        case 4:
+            lvl4();
+        break;
+
+        case 5:
+            lvl5();
+        break;
+
+        case 6:
+            lvl6();
+        break;
+
+        case 7:
+            lvl7();
+        break;
+
+        case 8:
+            lvl8();
+        break;
+
+        case 9:
+            lvl9();
+        break;
+
+        case 10:
+            lvl10();
+        break;
+
     }
 
     myGameArea.draw(spikes);
@@ -57,8 +89,8 @@ function updateGameArea() {
     }
 
 } 
-let levelIndex = 2;
-let loadedLevel = 2;
+let levelIndex = 3;
+let loadedLevel = 3;
 
 function lvl1(){
 
@@ -120,7 +152,24 @@ function lvl2(){
 }
 function lvl3(){
     
+    if (loadedLevel == 3){
+        loadedLevel++;
+        player.checkPoint.X = 160;
+        player.checkPoint.Y = 400;
+        player.x = 160;
+        player.y = 400
+    }
+
     myGameArea.draw(player);
+    myGameArea.draw(lvl3Box1);
+    myGameArea.draw(lvl3Conveyor1);
+    myGameArea.draw(lvl3Conveyor2);
+    myGameArea.draw(lvl3Mover);
+
+    newBoxCollision(lvl3Box1);
+    moverCollision(lvl3Mover);
+    conveyorCollision(lvl3Conveyor1);
+    conveyorCollision(lvl3Conveyor2);
 }
 function lvl4(){
     
@@ -222,7 +271,6 @@ function newBoxCollision(box){
             }
         }
     }
-
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 10){
             player.y = boxHeight + 10;
@@ -243,25 +291,25 @@ function conveyorCollision(box){
     let boxWidth = box.x + box.width + 5;
     let boxHeight = box.y + box.height;
 
-    if (playerHeight > box.y & player.y < boxHeight -10 & player.x < boxWidth - 40){
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x){
             player.x -= speedRight;
             airTime = 0;
             onWall = true;
 
             if (playerWidth > box.x + 5) {
-                player.x -= 10;
+                player.x -= 20;
             }
         }
     }
-    if (playerHeight > box.y & player.y < boxHeight -10 & playerWidth > box.x + 40){
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
             player.x += speedLeft;
             airTime = 0;
             onWall = true;
 
             if (player.x < boxWidth - 5) {
-                player.x += 10;
+                player.x += 20;
             }
         }
     }
@@ -345,6 +393,60 @@ function keyCollectionCollision(box, lock){
         }
     } 
 }
+function moverCollision(box){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    box.y -= 10;
+    if (box.y < 200){
+        box.y = 600;
+    }
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+            player.x -= speedRight;
+
+            if (grab){
+                player.y -= 5;
+                airTime = 0;
+                onWall = true;
+            }
+
+            if (playerWidth > box.x + 5) {
+                player.x -= 10;
+            }
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            player.x += speedLeft;
+
+            if (grab){
+                player.y -= 5;
+                airTime = 0;
+                onWall = true;
+            }
+
+            if (player.x < boxWidth - 5) {
+                player.x += 10;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 10){
+            player.y = boxHeight + 10;
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y -1){
+            player.y -= 20;
+            ground = true;
+            airTime = 0;
+        }
+    }
+}
 
 //GAMEOBJECTS//
 var player = {
@@ -388,6 +490,41 @@ var wallRight = {
     color: "#760000"
 };
 
+// LEVEL THREE \\
+
+let heightChecker1 = false;
+
+var lvl3Box1 = {
+    
+    width: 160,
+    height: 60,
+    x: 100,
+    y: 520,
+    color: "darkred"
+}
+var lvl3Conveyor1 = {
+    width: 40,
+    height: 300,
+    x: 300,
+    y: 350,
+    color: "darkgrey"
+};
+var lvl3Conveyor2 = {
+    width: 40,
+    height: 100,
+    x: 700,
+    y: 300,
+    color: "darkgrey"
+};
+var lvl3Mover = {
+    
+    width: 160,
+    height: 40,
+    x: 1200,
+    y: 500,
+    color: "darkred"
+}
+
 // LEVEL TWO \\
 var lvl2Box1 = {
     
@@ -396,7 +533,7 @@ var lvl2Box1 = {
     x: 160,
     y: 500,
     color: "darkred"
-}
+};
 var lvl2Box2 = {
     
     width: 120,
@@ -404,7 +541,7 @@ var lvl2Box2 = {
     x: 100,
     y: 200,
     color: "darkred"
-}
+};
 var lvl2Conveyor1 = {
     width: 40,
     height: 400,
@@ -419,7 +556,7 @@ var lvl2Lock1 = {
     x: 220,
     y: 0,
     color: "blue"
-}
+};
 var lvl2Key1 = {
     
     width: 50,
@@ -427,7 +564,7 @@ var lvl2Key1 = {
     x: 1120,
     y: 80,
     color: "cyan"
-}
+};
 var lvl2Conveyor2 = {
     width: 40,
     height: 400,
@@ -443,7 +580,6 @@ var lvl2Pass = {
     color: "white",
     nextLevel: 3
 };
-
 
 // LEVL ONE \\
 var box1 = {
