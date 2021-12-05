@@ -18,7 +18,7 @@ var myGameArea = {
 
     draw: function(component) {
         this.context.fillStyle =  component.color;
-        this.context.fillRect(component.x, component.y, component.width, component.height + 5);
+        this.context.fillRect(component.x, component.y, component.width, component.height);
     },
 }
 
@@ -37,9 +37,11 @@ function updateGameArea() {
 
     }
 
+    myGameArea.draw(spikes);
     myGameArea.draw(wallLeft);
     myGameArea.draw(wallRight);
     myGameArea.draw(block);
+    death(spikes);
     gravity();
     wallRightCollision();
     wallLeftCollision();
@@ -53,12 +55,9 @@ function updateGameArea() {
             jump();
         }
     }
-    if (bullet.count < 1) {
-        refill.color = "white";
-    }
 
 } 
-let levelIndex = 1;
+let levelIndex = 2;
 let loadedLevel = 2;
 
 function lvl1(){
@@ -76,7 +75,6 @@ function lvl1(){
     myGameArea.draw(conveyor2);
     myGameArea.draw(conveyor3);
     
-    myGameArea.draw(spikes);
 
     //Methods
 
@@ -84,8 +82,6 @@ function lvl1(){
     newBoxCollision(box2);
     newBoxCollision(box3);
     newBoxCollision(box4);
-
-    death(spikes);
 
     lvlPassCollision(lvl1Pass);
 
@@ -96,18 +92,35 @@ function lvl1(){
 function lvl2(){
     if (loadedLevel == 2){
         loadedLevel++;
+        player.checkPoint.X = 200;
+        player.checkPoint.Y = 400;
+        player.x = 200;
+        player.y = 400
     }
 
     myGameArea.draw(player);
+    myGameArea.draw(lvl2Box1);
+    myGameArea.draw(lvl2Box2);
+    myGameArea.draw(lvl2Lock1);
+    myGameArea.draw(lvl2Key1);
+    myGameArea.draw(lvl2Conveyor1);
+    myGameArea.draw(lvl2Conveyor2);
+    myGameArea.draw(lvl2Pass);
 
-    myGameArea.draw(box1);
-    myGameArea.draw(box2);
-    
-    newBoxCollision(box1);
-    newBoxCollision(box2);
+    newBoxCollision(blockUp);
+    newBoxCollision(lvl2Box1);
+    newBoxCollision(lvl2Box2);
+    newBoxCollision(lvl2Lock1);
+    keyCollectionCollision(lvl2Key1, lvl2Lock1);
+    conveyorCollision(lvl2Conveyor1);
+    conveyorCollision(lvl2Conveyor2);
+    lvlPassCollision(lvl2Pass);
+
+
 }
 function lvl3(){
     
+    myGameArea.draw(player);
 }
 function lvl4(){
     
@@ -211,8 +224,8 @@ function newBoxCollision(box){
     }
 
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
-        if (player.y < boxHeight + 20){
-            player.y = boxHeight + 20;
+        if (player.y < boxHeight + 10){
+            player.y = boxHeight + 10;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
@@ -230,7 +243,7 @@ function conveyorCollision(box){
     let boxWidth = box.x + box.width + 5;
     let boxHeight = box.y + box.height;
 
-    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+    if (playerHeight > box.y & player.y < boxHeight -10 & player.x < boxWidth - 40){
        if (playerWidth > box.x){
             player.x -= speedRight;
             airTime = 0;
@@ -241,7 +254,7 @@ function conveyorCollision(box){
             }
         }
     }
-    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+    if (playerHeight > box.y & player.y < boxHeight -10 & playerWidth > box.x + 40){
         if (player.x < boxWidth){
             player.x += speedLeft;
             airTime = 0;
@@ -254,15 +267,14 @@ function conveyorCollision(box){
     }
 
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
-        if (player.y < boxHeight + 20){
-            player.y = boxHeight + 20;
+        if (player.y < boxHeight +10){
+            player.y = boxHeight +10;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
-            player.y -= 5;
-            ground = true;
-            airTime = 0;
+            player.x = player.checkPoint.X;
+            player.y = player.checkPoint.Y;
         }
     } 
 }
@@ -270,6 +282,8 @@ function death(spiker){
     if ((player.x + player.width > spiker.x & player.x + player.width < spiker.x + spiker.width + 40 & player.y + player.height > spiker.y)){
         player.x = player.checkPoint.X;
         player.y = player.checkPoint.Y;
+        lvl2Key1.color = "cyan";
+        lvl2Lock1.y = 0;
     }
 }
 function lvlPassCollision(box){
@@ -280,23 +294,54 @@ function lvlPassCollision(box){
 
     if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x){
-           levelIndex = lvl1Pass.nextLevel;
+           levelIndex = box.nextLevel;
         }
     }
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
-            levelIndex = lvl1Pass.nextLevel;
+            levelIndex = box.nextLevel;
         }
     }
 
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 20){
-            levelIndex = lvl1Pass.nextLevel;
+            levelIndex = box.nextLevel;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
-            levelIndex = lvl1Pass.nextLevel;
+            levelIndex = box.nextLevel;
+        }
+    } 
+}
+function keyCollectionCollision(box, lock){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+           lock.y = -200;
+           box.color = "transparent";
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            lock.y = -200;
+            box.color = "transparent";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 20){
+            lock.y = -200;
+            box.color = "transparent";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            lock.y = -200;
+            box.color = "transparent";
         }
     } 
 }
@@ -314,12 +359,18 @@ var player = {
         Y: 370
     }
 };
-
 var block = {
     width: 1450,
     height: 300,
     x: 0,
     y: 600,
+    color: "#760000"
+};
+var blockUp = {
+    width: 1450,
+    height: 40,
+    x: 0,
+    y: -50,
     color: "#760000"
 };
 var wallLeft = {
@@ -336,6 +387,63 @@ var wallRight = {
     y: 0,
     color: "#760000"
 };
+
+// LEVEL TWO \\
+var lvl2Box1 = {
+    
+    width: 120,
+    height: 80,
+    x: 160,
+    y: 500,
+    color: "darkred"
+}
+var lvl2Box2 = {
+    
+    width: 120,
+    height: 40,
+    x: 100,
+    y: 200,
+    color: "darkred"
+}
+var lvl2Conveyor1 = {
+    width: 40,
+    height: 400,
+    x: 500,
+    y: 00,
+    color: "darkgrey"
+};
+var lvl2Lock1 = {
+    
+    width: 40,
+    height: 240,
+    x: 220,
+    y: 0,
+    color: "blue"
+}
+var lvl2Key1 = {
+    
+    width: 50,
+    height: 50,
+    x: 1120,
+    y: 80,
+    color: "cyan"
+}
+var lvl2Conveyor2 = {
+    width: 40,
+    height: 400,
+    x: 800,
+    y: -80,
+    color: "darkgrey"
+};
+var lvl2Pass = {
+    width: 60,
+    height: 60,
+    x: 130,
+    y: 100,
+    color: "white",
+    nextLevel: 3
+};
+
 
 // LEVL ONE \\
 var box1 = {
@@ -363,10 +471,9 @@ var box4 = {
     width: 120,
     height: 40,
     x: 560,
-    y: 80,
+    y: 120,
     color: "darkred"
 };
-
 var conveyor1 = {
     width: 40,
     height: 100,
@@ -388,7 +495,6 @@ var conveyor3 = {
     y: 400,
     color: "darkgrey"
 };
-
 var spikes = {
     width: 2000,
     height: 20,
@@ -396,15 +502,6 @@ var spikes = {
     y: 580,
     color: "black"
 };
-let bullet = {
-    count: 3,
-    x: 0,
-    y: 0,
-    width: 10,
-    height: 10,
-    color: "yellow"
-};
-
 var lvl1Pass = {
     width: 60,
     height: 60,
@@ -414,7 +511,6 @@ var lvl1Pass = {
     nextLevel: 2
 };
 
-
 //MOVEMENT//
 let fallSpeed = 5;
 let onWall = false;
@@ -422,7 +518,6 @@ let ground = true;
 let airTime = 0;
 let bulletSpeed;
 let grab = false;
-
 
 let speedRight = 0;
 let speedLeft = 0;
