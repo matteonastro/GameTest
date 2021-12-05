@@ -81,7 +81,6 @@ function updateGameArea() {
     moveleft();
     movedown();
 
-
     if (airTime < 161){
         if (ground || onWall){
             jump();
@@ -199,8 +198,6 @@ function lvl4(){
         block.color = "#3D3D3D"
         wallLeft.color = "#3D3D3D"
         wallRight.color = "#3D3D3D"
-
-       
     }
     
     myGameArea.canvas.getContext("2d").fillStyle = "#292929";
@@ -927,7 +924,6 @@ let fallSpeed = 5;
 let onWall = false;
 let ground = true;
 let airTime = 0;
-let bulletSpeed;
 let grab = false;
 let umbrella = false;
 
@@ -1020,16 +1016,4 @@ function moveleft() {
 }
 function moveright() {
     player.x += speedRight;
-}
-function shoot(){
-    if (bullet.count > 0){
-        if (player.facing == "RIGHT"){
-            bullet.x = player.x + player.width + 5;
-            bulletSpeed = 20;
-        } else {
-            bullet.x = player.x - 15;
-            bulletSpeed = (-20);
-        }
-        bullet.y = player.y + 20;
-    }
 }
