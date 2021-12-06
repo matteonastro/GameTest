@@ -25,7 +25,6 @@ var myGameArea = {
 function updateGameArea() {
     
     myGameArea.canvas.getContext("2d").clearRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
-
     switch (levelIndex){
         case 1:
             lvl1();
@@ -67,8 +66,22 @@ function updateGameArea() {
             lvl10();
         break;
 
-    }
+        case 11:
+            lvl11();
+        break;
 
+        case 12:
+            lvl12();
+        break;
+    }
+    mainObjects();
+} 
+
+let levelIndex = 5;
+let loadedLevel = 5;
+
+function mainObjects(){
+    
     myGameArea.draw(spikes);
     myGameArea.draw(wallLeft);
     myGameArea.draw(wallRight);
@@ -91,10 +104,7 @@ function updateGameArea() {
     } else {
         player.color = "cyan";
     }
-} 
-let levelIndex = 4;
-let loadedLevel = 4;
-
+}
 function lvl1(){
 
     //Drawers
@@ -214,6 +224,7 @@ function lvl4(){
     myGameArea.draw(lvl4KillerPillar3);
     myGameArea.draw(lvl4KillerPillar4);
     myGameArea.draw(lvl4FanOn);
+    myGameArea.draw(lvl4Pass);
 
     newBoxCollision(blockUp);
     newBoxCollision(lvl4Box1);
@@ -226,9 +237,58 @@ function lvl4(){
     fanCollision(lvl4Fan2);
     fanCollision(lvl4Fan3);
     fanOnCollision(lvl4FanOn, lvl4Fan3);
+    lvlPassCollision(lvl4Pass);
 }
 function lvl5(){
+    if (loadedLevel == 5){
+        loadedLevel++;
+        player.checkPoint.X = 1270;
+        player.checkPoint.Y = 400;
+        player.x = 1270;
+        player.y = 400
+
+        spikes.color = "#595959"
+        block.color = "#3D3D3D"
+        wallLeft.color = "#3D3D3D"
+        wallRight.color = "#3D3D3D"
+    }
     
+    if (player.x < lvl5KillerPillar2.x - 80 & lvl5KillerPillar2.y + lvl5KillerPillar2.width < block.y - 80){
+        lvl5KillerPillar2.y += 10
+    }
+    if (!lvl5Fan1.on & lvl5Pass.y + lvl5Pass.width < lvl5Fan1.y - 5){
+        lvl5Pass.y += 10;
+    }
+
+    myGameArea.canvas.getContext("2d").fillStyle = "#292929";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+
+    myGameArea.draw(player);
+    myGameArea.draw(lvl5Box1);
+    myGameArea.draw(lvl5Box2);
+    myGameArea.draw(lvl5Fan1);
+    myGameArea.draw(lvl5Fan2);
+    myGameArea.draw(lvl5Fan3);
+    myGameArea.draw(lvl5KillerPillar1);
+    myGameArea.draw(lvl5KillerPillar2);
+    myGameArea.draw(lvl5KillerPillar3);
+    myGameArea.draw(lvl5KillerPillar4);
+    myGameArea.draw(lvl5FanOn);
+    myGameArea.draw(lvl5Pass);
+
+    newBoxCollision(blockUp);
+    newBoxCollision(lvl5Box1);
+    newBoxCollision(lvl5Box2);
+    fanCollision(lvl5Fan1);
+    fanCollision(lvl5Fan2);
+    fanCollision(lvl5Fan3);
+    killerPillarCollision(lvl5KillerPillar1);
+    killerPillarCollision(lvl5KillerPillar2);
+    killerPillarCollision(lvl5KillerPillar3);
+    killerPillarCollision(lvl5KillerPillar4);
+    fanOnCollision(lvl5FanOn, lvl5Fan1);
+    fanOnCollision(lvl5FanOn2, lvl5Fan3);
+    lvlPassCollision(lvl5Pass);
 }
 function lvl6(){
     
@@ -243,6 +303,12 @@ function lvl9(){
     
 }
 function lvl10(){
+    
+}
+function lvl11(){
+    
+}
+function lvl12(){
     
 }
 
@@ -620,6 +686,16 @@ function deathReset(){
     lvl4FanOn.color = "#07C900";
     lvl4Fan3.on = false;
     lvl4Fan3.color = "#035900";
+    lvl5KillerPillar2.y = 0;
+    lvl5Fan1.on = true;
+    lvl5FanOn.y = 430;
+    lvl4FanOn.y = 40;
+    lvl5Fan1.color = "green";
+    lvl5FanOn.color = "#07C900";
+    lvl5Pass.y = -120;
+    lvl5Fan3.on = false;
+    lvl5Fan3.color = "#035900";
+    lvl5FanOn2.y = 430;
 }
 function fanCollision(box){
     let playerWidth = player.x + player.width + 5;
@@ -716,78 +792,157 @@ function fanOnCollision(box, lock){
 
     if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x){
-           lock.on = true;
+           if (lock.on){
+               lock.on = false;
+               lock.color = "#035900"
+           } else {
+                lock.on = true;
+                lock.color = "green";
+           }
            box.color = "transparent";
-           lock.color = "green";
+           box.y = -80;
         }
     }
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
-            lock.on = true;
+            if (lock.on){
+                lock.on = false;
+                lock.color = "#035900"
+            } else {
+                 lock.on = true;
+                 lock.color = "green";
+            }
             box.color = "transparent"
-            lock.color = "green";
+            box.y = -80;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 20){
-            lock.on = true;
+            if (lock.on){
+                lock.on = false;
+                lock.color = "#035900"
+            } else {
+                 lock.on = true;
+                 lock.color = "green";
+            }
             box.color = "transparent"
-            lock.color = "green";
+            box.y = -80;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
-            lock.on = true;
+            if (lock.on){
+                lock.on = false;
+                lock.color = "#035900"
+            } else {
+                 lock.on = true;
+                 lock.color = "green";
+            }
             box.color = "transparent"
-            lock.color = "green";
+            box.y = -80;
         }
     } 
 }
 
-//GAMEOBJECTS//
-var player = {
-    width: 40,
-    height: 80,
-    x: 950,
-    y: 370,
-    color: "red",
-    facing: "RIGHT",
-    checkPoint: {
-        X: 950,
-        Y: 370
-    }
-};
-var block = {
-    width: 1450,
-    height: 300,
-    x: 0,
-    y: 600,
-    color: "#760000"
-};
-var blockUp = {
-    width: 1450,
-    height: 40,
-    x: 0,
-    y: -50,
-    color: "#760000"
-};
-var wallLeft = {
-    width: 100,
-    height: 1000,
-    x: 0,
+// LEVEL FIVE \\
+var lvl5Box1 = {
+    
+    width: 160,
+    height: 60,
+    x: 1230,
+    y: 520,
+    color: "grey"
+}
+var lvl5Box2 = {
+    
+    width: 160,
+    height: 60,
+    x: 90,
+    y: 520,
+    color: "grey"
+}
+var lvl5Fan1 = {
+    width: 80,
+    height: 60,
+    x: 1100,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl5Fan2 = {
+    width: 80,
+    height: 60,
+    x: 560,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl5Fan3 = {
+    width: 80,
+    height: 60,
+    x: 300,
+    y: 540,
+    color: "#035900",
+    on: false
+}
+var lvl5KillerPillar1 = {
+    
+    width: 80,
+    height: 500,
+    x: 970,
+    y: 200,
+    color: "darkgrey"
+}
+var lvl5KillerPillar2 = {
+    
+    width: 80,
+    height: 420,
+    x: 700,
     y: 0,
-    color: "#760000"
-};
-var wallRight = {
-    width: 100,
-    height: 1000,
-    x: 1350,
+    color: "darkgrey"
+}
+var lvl5KillerPillar3 = {
+    
+    width: 80,
+    height: 500,
+    x: 430,
+    y: 300,
+    color: "darkgrey"
+}
+var lvl5KillerPillar4 = {
+    
+    width: 80,
+    height: 160,
+    x: 430,
     y: 0,
-    color: "#760000"
+    color: "darkgrey"
+}
+var lvl5FanOn = {
+    
+    width: 50,
+    height: 50,
+    x: 150,
+    y: 430,
+    color: "#07C900"
+}
+var lvl5FanOn2 = {
+    
+    width: 50,
+    height: 50,
+    x: 150,
+    y: 430,
+    color: "#07C900"
+}
+var lvl5Pass = {
+    width: 60,
+    height: 60,
+    x: 1110,
+    y: -120,
+    color: "white",
+    nextLevel: 6
 };
 
 // LEVEL FOUR \\
-
 var lvl4Box1 = {
     
     width: 160,
@@ -868,11 +1023,17 @@ var lvl4KillerPillar4 = {
     y: 0,
     color: "darkgrey"
 }
+var lvl4Pass = {
+    width: 60,
+    height: 60,
+    x: 690,
+    y: 40,
+    color: "white",
+    nextLevel: 5
+};
 
 // LEVEL THREE \\
-
 let heightChecker1 = false;
-
 var lvl3Box1 = {
     
     width: 160,
@@ -1080,6 +1241,48 @@ var lvl1Pass = {
     y: 100,
     color: "white",
     nextLevel: 2
+};
+
+//GAMEOBJECTS//
+var player = {
+    width: 40,
+    height: 80,
+    x: 950,
+    y: 370,
+    color: "red",
+    facing: "RIGHT",
+    checkPoint: {
+        X: 950,
+        Y: 370
+    }
+};
+var block = {
+    width: 1450,
+    height: 300,
+    x: 0,
+    y: 600,
+    color: "#760000"
+};
+var blockUp = {
+    width: 1450,
+    height: 40,
+    x: 0,
+    y: -50,
+    color: "#760000"
+};
+var wallLeft = {
+    width: 100,
+    height: 1000,
+    x: 0,
+    y: 0,
+    color: "#760000"
+};
+var wallRight = {
+    width: 100,
+    height: 1000,
+    x: 1350,
+    y: 0,
+    color: "#760000"
 };
 
 //MOVEMENT//
