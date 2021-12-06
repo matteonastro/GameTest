@@ -92,8 +92,8 @@ function updateGameArea() {
         player.color = "cyan";
     }
 } 
-let levelIndex = 1;
-let loadedLevel = 2;
+let levelIndex = 4;
+let loadedLevel = 4;
 
 function lvl1(){
 
@@ -205,10 +205,27 @@ function lvl4(){
 
     myGameArea.draw(player);
     myGameArea.draw(lvl4Box1);
-    myGameArea.draw(lvl4Fan1);
+    myGameArea.draw(lvl4Box2);
+    myGameArea.draw(lvl4Fan1);   
+    myGameArea.draw(lvl4Fan2); 
+    myGameArea.draw(lvl4Fan3); 
+    myGameArea.draw(lvl4KillerPillar1);   
+    myGameArea.draw(lvl4KillerPillar2);  
+    myGameArea.draw(lvl4KillerPillar3);
+    myGameArea.draw(lvl4KillerPillar4);
+    myGameArea.draw(lvl4FanOn);
 
+    newBoxCollision(blockUp);
     newBoxCollision(lvl4Box1);
+    newBoxCollision(lvl4Box2);
+    killerPillarCollision(lvl4KillerPillar1);
+    killerPillarCollision(lvl4KillerPillar2);
+    killerPillarCollision(lvl4KillerPillar3);
+    killerPillarCollision(lvl4KillerPillar4);
     fanCollision(lvl4Fan1);
+    fanCollision(lvl4Fan2);
+    fanCollision(lvl4Fan3);
+    fanOnCollision(lvl4FanOn, lvl4Fan3);
 }
 function lvl5(){
     
@@ -599,7 +616,10 @@ function deathReset(){
     lvl2Key1.color = "cyan";
     lvl2Lock1.y = 0;
     lvl3Lava.y = 0;
-    lvl3LavaSwitch. color = "orange"
+    lvl3LavaSwitch. color = "orange";
+    lvl4FanOn.color = "#07C900";
+    lvl4Fan3.on = false;
+    lvl4Fan3.color = "#035900";
 }
 function fanCollision(box){
     let playerWidth = player.x + player.width + 5;
@@ -631,20 +651,98 @@ function fanCollision(box){
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
-        if (umbrella){
-            if (airTime > 0){
-                if (airTime > 161){            
+        if (box.on){
+            if (umbrella){
+                if (airTime > 0){
+                    if (airTime > 161){            
+                        player.y -= 10; 
+                    }
+                } else if (airTime < 1){ 
                     player.y -= 10; 
                 }
-            } else if (airTime < 1){ 
-                player.y -= 10; 
             }
-        }
-        if (playerHeight > box.y - 1){
-            deathReset();
+            if (playerHeight > box.y - 1){
+                deathReset();
+            }
+        } else {
+            if (playerHeight > box.y - 1){
+                player.y -= 5;
+                ground = true;
+                airTime = 0;
+            }
         }
     } 
 } 
+function killerPillarCollision(box){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+            player.x -= speedRight;
+
+            if (playerWidth > box.x + 5) {
+                player.x -= 10;
+            }
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            player.x += speedLeft;
+
+            if (player.x < boxWidth - 5) {
+                player.x += 10;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight){
+            deathReset();
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            deathReset();
+        }
+    }    
+}
+function fanOnCollision(box, lock){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+           lock.on = true;
+           box.color = "transparent";
+           lock.color = "green";
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            lock.on = true;
+            box.color = "transparent"
+            lock.color = "green";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 20){
+            lock.on = true;
+            box.color = "transparent"
+            lock.color = "green";
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+            lock.on = true;
+            box.color = "transparent"
+            lock.color = "green";
+        }
+    } 
+}
 
 //GAMEOBJECTS//
 var player = {
@@ -698,12 +796,77 @@ var lvl4Box1 = {
     y: 520,
     color: "grey"
 }
+var lvl4Box2 = {
+    
+    width: 160,
+    height: 60,
+    x: 1200,
+    y: 520,
+    color: "grey"
+}
 var lvl4Fan1 = {
     width: 80,
     height: 60,
     x: 300,
-    y: 540,
-    color: "green"
+    y: 500,
+    color: "green",
+    on: true
+}
+var lvl4Fan2 = {
+    width: 80,
+    height: 60,
+    x: 1080,
+    y: 500,
+    color: "green",
+    on: true
+}
+var lvl4Fan3 = {
+    width: 160,
+    height: 60,
+    x: 640,
+    y: 380,
+    color: "#035900",
+    on: false
+}
+var lvl4FanOn = {
+    
+    width: 50,
+    height: 50,
+    x: 1250,
+    y: 40,
+    color: "#07C900"
+}
+var lvl4KillerPillar1 = {
+    
+    width: 80,
+    height: 500,
+    x: 430,
+    y: 340,
+    color: "darkgrey"
+}
+var lvl4KillerPillar3 = {
+    
+    width: 80,
+    height: 160,
+    x: 430,
+    y: 0,
+    color: "darkgrey"
+}
+var lvl4KillerPillar2 = {
+    
+    width: 80,
+    height: 500,
+    x: 950,
+    y: 340,
+    color: "darkgrey"
+}
+var lvl4KillerPillar4 = {
+    
+    width: 80,
+    height: 160,
+    x: 950,
+    y: 0,
+    color: "darkgrey"
 }
 
 // LEVEL THREE \\
@@ -995,18 +1158,7 @@ function jump() {
 
     player.y -= speedUp;
     airTime += speedUp;
-    //if (onWall){
-    //    if (player.facing == "RIGHT"){
-    //        player.x -= 10;
-    //        
-    //    } else {
-    //        player.x += 10;
-    //    }
-    //    speedLeft = 0;
-    //    speedRight = 0;
-    //    
-    //}
-    //Wall jumping (BROKEN)
+
 }
 function movedown() {
     player.y += speedDown;
