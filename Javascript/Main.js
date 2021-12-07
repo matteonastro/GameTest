@@ -77,8 +77,8 @@ function updateGameArea() {
     mainObjects();
 } 
 
-let levelIndex = 5;
-let loadedLevel = 5;
+let levelIndex = 6;
+let loadedLevel = 6;
 
 function mainObjects(){
     
@@ -291,7 +291,60 @@ function lvl5(){
     lvlPassCollision(lvl5Pass);
 }
 function lvl6(){
+    if (loadedLevel == 6){
+        loadedLevel++;
+        player.checkPoint.X = 160;
+        player.checkPoint.Y = 400;
+        player.x = 160;
+        player.y = 400
+
+        spikes.color = "#595959"
+        block.color = "#3D3D3D"
+        wallLeft.color = "#3D3D3D"
+        wallRight.color = "#3D3D3D"
+    }
+
+    myGameArea.canvas.getContext("2d").fillStyle = "#292929";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+
+    myGameArea.draw(player);
+    myGameArea.draw(lvl6Box1);
+    myGameArea.draw(lvl6Fan1);
+    myGameArea.draw(lvl6Fan2);
+    myGameArea.draw(lvl6Fan3);
+    myGameArea.draw(lvl6Fan4);
+    myGameArea.draw(lvl6Fan5);
+    myGameArea.draw(lvl6Fan6);
+    myGameArea.draw(lvl6Fan7);
+    myGameArea.draw(lvl6FanOn);
+    myGameArea.draw(lvl6KillerPillar1);
+    myGameArea.draw(lvl6KillerPillar2);
+    myGameArea.draw(lvl6Pass);
     
+    
+    newBoxCollision(blockUp);
+    newBoxCollision(lvl6Box1);
+    fanCollision(lvl6Fan1);
+    fanCollision(lvl6Fan2);
+    fanCollision(lvl6Fan3);
+    fanCollision(lvl6Fan4);
+    fanCollision(lvl6Fan5);
+    fanCollision(lvl6Fan6);
+    fanCollision(lvl6Fan7);
+    killerPillarCollision(lvl6KillerPillar1);
+    killerPillarCollision(lvl6KillerPillar2);
+    fanOnCollision(lvl6FanOn, lvl6Fan7);
+    lvlPassCollision(lvl6Pass);
+
+    if (player.y + player.height < lvl6KillerPillar1.y & lvl6KillerPillar1.x + lvl6KillerPillar1.width < 1500){
+        lvl6KillerPillar1.x += 10;
+    }
+    if (!lvl6Fan7.on & lvl6Pass.y + lvl6Pass.width < lvl6Fan7.y - 5){
+        lvl6Pass.y += 5;
+    }
+    if (player.y > lvl6KillerPillar1.y  + lvl6KillerPillar1.height & lvl6KillerPillar1.x > 0){
+        lvl6KillerPillar1.x -= 10;
+    }
 }
 function lvl7(){
     
@@ -696,6 +749,12 @@ function deathReset(){
     lvl5Fan3.on = false;
     lvl5Fan3.color = "#035900";
     lvl5FanOn2.y = 430;
+    lvl6KillerPillar1.x = 0;
+    lvl6FanOn.y = 265;
+    lvl6FanOn.color = "#07C900"
+    lvl6Fan7.on = true;
+    lvl6Fan7.color = "green"   
+    lvl6Pass.y = -120;
 }
 function fanCollision(box){
     let playerWidth = player.x + player.width + 5;
@@ -843,6 +902,104 @@ function fanOnCollision(box, lock){
         }
     } 
 }
+
+// LEVEL SIX \\
+var lvl6Box1 = {
+    
+    width: 160,
+    height: 60,
+    x: 90,
+    y: 520,
+    color: "grey"
+}
+var lvl6Fan1 = {
+    width: 80,
+    height: 60,
+    x: 300,
+    y: -100,
+    color: "green",
+    on: true
+}
+var lvl6Fan2 = {
+    width: 80,
+    height: 60,
+    x: 450,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl6Fan3 = {
+    width: 80,
+    height: 60,
+    x: 600,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl6Fan4 = {
+    width: 80,
+    height: 60,
+    x: 750,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl6Fan5 = {
+    width: 80,
+    height: 60,
+    x: 900,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl6Fan6 = {
+    width: 80,
+    height: 60,
+    x: 1050,
+    y: 540,
+    color: "green",
+    on: true
+}
+var lvl6Fan7 = {
+    width: 160,
+    height: 60,
+    x: 1200,
+    y: 520,
+    color: "green",
+    on: true
+}
+var lvl6KillerPillar1 = {
+    
+    width: 1200,
+    height: 80,
+    x: 0,
+    y: 250,
+    color: "darkgrey"
+}
+var lvl6KillerPillar2 = {
+    
+    width: 1450,
+    height: 80,
+    x: 0,
+    y: -40,
+    color: "darkgrey"
+}
+var lvl6FanOn = {
+    
+    width: 50,
+    height: 50,
+    x: 150,
+    y: 265,
+    color: "#07C900"
+}
+var lvl6Pass = {
+    width: 60,
+    height: 60,
+    x: 1250,
+    y: -120,
+    color: "white",
+    nextLevel: 7
+};
 
 // LEVEL FIVE \\
 var lvl5Box1 = {
