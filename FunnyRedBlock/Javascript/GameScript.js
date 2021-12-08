@@ -77,8 +77,8 @@ function updateGameArea() {
     mainObjects();
 } 
 
-let levelIndex = 6;
-let loadedLevel = 6;
+let levelIndex = 1;
+let loadedLevel = 2;
 
 function mainObjects(){
     
