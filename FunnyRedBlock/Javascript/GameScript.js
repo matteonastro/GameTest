@@ -14,9 +14,6 @@ var myGameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
         this.interval = setInterval(updateGameArea, 20);
-
-        //These are the funny html images :cat_joy from discord emoji:
-        funnyhtmlimages("playeridle");
     },    
 
     draw: function(component) {
@@ -78,11 +75,15 @@ function updateGameArea() {
         break;
     }
     mainObjects();
+    if (spikes.y < 0){
+                    
+        myGameArea.canvas.getContext("2d").fillStyle = "black";
+        myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+        myGameArea.canvas.getContext("2d").fillStyle = "white";
+        myGameArea.canvas.getContext("2d").font = "80px italic";
+        myGameArea.canvas.getContext("2d").fillText("You have been embraced by the void.", 140, 340);
+    }
 } 
-
-function funnyhtmlimages(id){
-    document.getElementById(id).style.width = "0px";
-}
 
 let levelIndex = 7;
 let loadedLevel = 7;
@@ -390,7 +391,7 @@ function lvl7(){
     newBoxCollision(bossPatformOne);
     newBoxCollision(bossPatformThree);
 
-    if (player.y < bossPatformThree.y - 80){
+    if (player.y < bossPatformThree.y - 80 & speedLeft == 0 & speedRight == 0){
 
         myGameArea.canvas.getContext("2d").fillStyle = "black";
         myGameArea.canvas.getContext("2d").font = "40px italic";
@@ -420,9 +421,10 @@ function lvl7(){
 function lvl8(){
 
     if (loadedLevel == 8){
+        player.checkPoint.X = 700;
         loadedLevel++;
         cutscene = false;
-        spikes.y = 1000;
+        spikes.y = 900;
         spikes.color = "black";
         spikes.height = 10000;
     }
@@ -437,23 +439,36 @@ function lvl8(){
     myGameArea.draw(spikes);
     
     newBoxCollision(BossGroundPre);
-    newBoxCollision(P1Pat1);
-    newBoxCollision(P1Pat2);
+    conveyorCollision(P1Pat1);
+    fanCollision(P1Pat2);
+    if (player.y > BossGroundPre.y + 80){
+        deathReset();
+        Radiance.HP = 500;
+    }
     
     if (Radiance.HP > 0){
 
         myGameArea.draw(Radiance.hitbox);
         myGameArea.draw(Radiance.attacks.laser);
         myGameArea.draw(Radiance.attacks.orb);
+        myGameArea.draw(Radiance.attacks.sword);
 
         Radiance.updaters.laserMover();
         Radiance.updaters.orbMover();
+        Radiance.updaters.swordMover();
+
+        bossDeath(Radiance.attacks.laser);
+        bossDeath(Radiance.attacks.orb);
+        bossDeath(Radiance.attacks.sword);
         Radiance.attacks.beginAttack();
         Radiance.takeDamage(Radiance.hitbox);
         if (Radiance.attacks.orb.orbing){
 
             Radiance.attacks.orb.homing();
         }
+        myGameArea.canvas.getContext("2d").fillStyle = "black";
+        myGameArea.canvas.getContext("2d").font = "40px italic";
+        myGameArea.canvas.getContext("2d").fillText(Radiance.HP, Radiance.hitbox.x+40, Radiance.hitbox.y+80);
     } else{
         
         myGameArea.draw(P1Pat3);
@@ -470,6 +485,14 @@ function lvl8(){
         spikes.y -= 3;
     }
 
+}
+function lvl9(){
+    
+    myGameArea.canvas.getContext("2d").fillStyle = "black";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+    myGameArea.canvas.getContext("2d").fillStyle = "white";
+    myGameArea.canvas.getContext("2d").font = "80px italic";
+    myGameArea.canvas.getContext("2d").fillText("You have embraced the void.", 280, 340);
 }
 
 
@@ -1010,18 +1033,63 @@ function fanOnCollision(box, lock){
         }
     } 
 }
+function bossDeath(box){
+    let playerWidth = player.x + player.width + 5;
+    let playerHeight = player.y + player.height;
+    let boxWidth = box.x + box.width + 5;
+    let boxHeight = box.y + box.height;
+
+    if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+       if (playerWidth > box.x){
+        if (Radiance.HP < 500){
+            Radiance.HP += 2;
+        } else {
+            Radiance.HP = 500;
+        }
+        }
+    }
+    if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+        if (player.x < boxWidth){
+            if (Radiance.HP < 500){
+                Radiance.HP += 2;
+            } else {
+                Radiance.HP = 500;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+        if (player.y < boxHeight + 10){
+            if (Radiance.HP < 500){
+                Radiance.HP += 2;
+            } else {
+                Radiance.HP = 500;
+            }
+        }
+    }
+    if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+        if (playerHeight > box.y - 1){
+           if (Radiance.HP < 500){
+               Radiance.HP += 2;
+           } else {
+               Radiance.HP = 500;
+           }
+        }
+    }    
+}
 
 // <--- THE RADIANCE ---> \\
-var Radiance = {
+var Radiance = { 
 
     /*Note: This is insane why the fuck am i doing this lmao well im gonna leave notes for how i slowly become insane from this here 
             [11:09] i am, fine, i think, also this boss is ripped off Hollow Knight, my favourite game 
             [11:26] thinking of making functions specific to the objects in the boss, dont need more of them sooo
             [13:08] i made the laser attack work, working on the orb one now, i had dinner- i didnt just spend 2 hours making an attack
             [14:05] HOMING ORBS HOLY SHIT IT WORKS HOWHOWHOWHOWHOW
-            [16:32] fuck other phases, one is enough, sword attacks going in phase one and HHHHHHHHHHHHHH yea*/
+            [16:32] fuck other phases, one is enough, sword attacks going in phase one and HHHHHHHHHHHHHH yea
+            [18:01] i am going insane
+            [18:49] DONE ITS DONE ITS DONE AHAHJAHJAHJAHJHJSHJASHJASHJ*/
 
-    HP: 10, //One hit = 1 dmg, once the player collides with the radiance one HP is subtracted.
+    HP: 500, //One hit = 1 dmg, once the player collides with the radiance one HP is subtracted.
     takeDamage: function(box){
         let playerWidth = player.x + player.width + 5;
         let playerHeight = player.y + player.height;
@@ -1032,32 +1100,24 @@ var Radiance = {
         if (playerWidth > box.x){
 
             this.HP--;
-            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
-            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
             }
         }
         if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
             if (player.x < boxWidth){
                 
             this.HP--;
-            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
-            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
             }
         }
         if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
             if (player.y < boxHeight + 10){
                 
             this.HP--;
-            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
-            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
             }
         }
         if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
             if (playerHeight > box.y - 1){
                 
             this.HP--;
-            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
-            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
             }
         }    
     },
@@ -1088,6 +1148,8 @@ var Radiance = {
                         this.attacking = true;
                         break;
                     case 2:
+                        Radiance.attacks.sword.move();
+                        this.attacking = true;
                         break;
                 }
             }
@@ -1150,14 +1212,29 @@ var Radiance = {
             }
         },
         sword: { //A sword appears in the sky, after 20 frames it falls down (this is for phase 2)
-
-            preview: 20,
             
-            width: 20,
-            height: 80,
-            x: 440,
-            y: 20,
-            color: "white"
+            width: 40,
+            height: 120,
+            x: -120,
+            y: -120,
+            color: "white",
+            moveSpeedy: 0,
+            attackTime: 0,
+
+            move: function(){
+
+               Radiance.attacks.sword.moveSpeedy = 15;
+
+               if (Math.random() >= 0.5){
+                   
+                   Radiance.attacks.sword.x = 200;
+               } else{
+
+                   Radiance.attacks.sword.x = 1200;
+               }
+                
+
+            }
         },
     },
     
@@ -1199,12 +1276,6 @@ var Radiance = {
             Radiance.attacks.orb.width -= 0.2;
             Radiance.attacks.orb.height -= 0.2;
 
-            if (Radiance.attacks.orb.moveSpeedx > 25 || Radiance.attacks.orb.moveSpeedx < -25){
-                Radiance.attacks.orb.moveSpeedx /= 1.5;
-            } else if (Radiance.attacks.orb.moveSpeedx < 4 & Radiance.attacks.orb.moveSpeedx > -4){
-                Radiance.attacks.orb.moveSpeedx *= 1.5;
-            }
-
             Radiance.attacks.orb.x += Radiance.attacks.orb.moveSpeedx;
             Radiance.attacks.orb.y += Radiance.attacks.orb.moveSpeedy;
 
@@ -1227,6 +1298,21 @@ var Radiance = {
                     Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
                     Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
                 }
+            }
+        },
+        swordMover: function(){
+
+            Radiance.attacks.sword.y += Radiance.attacks.sword.moveSpeedy;
+
+            if (Radiance.attacks.orb.attackTime > 160){
+
+                Radiance.attacks.attacking = false;
+                Radiance.attacks.sword.moveSpeedy = 0;
+                Radiance.attacks.sword.y = -1000;
+                Radiance.attacks.sword.attackTime = 0;
+            } else{
+                
+                Radiance.attacks.sword.attackTime++;
             }
         }
     }
@@ -1269,19 +1355,20 @@ var bossPatformThree = {
 // Phase 1 \\
 var P1Pat1 = {
     
-    width: 120,
-    height: 40,
-    x: 160,
-    y: 500,
-    color: "#9B5412"
+    width: 40,
+    height: 200,
+    x: 100,
+    y: 260,
+    color: "grey"
 }
 var P1Pat2 = {
     
     width: 120,
-    height: 40,
-    x: 1160,
-    y: 500,
-    color: "#9B5412"
+    height: 660,
+    x: 1280,
+    y: 660,
+    color: "green",
+    on: true
 }
 var P1Pat3 = {
     
