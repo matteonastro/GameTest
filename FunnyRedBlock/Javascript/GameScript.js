@@ -85,8 +85,8 @@ function updateGameArea() {
     }
 } 
 
-let levelIndex = 7;
-let loadedLevel = 7;
+let levelIndex = 1;
+let loadedLevel = 2;
 
 function mainObjects(){
     
@@ -1905,12 +1905,12 @@ var lvl1Pass = {
 var player = {
     width: 40,
     height: 80,
-    x: 950,
+    x: 940,
     y: 370,
     color: "red",
     facing: "RIGHT",
     checkPoint: {
-        X: 950,
+        X: 940,
         Y: 370
     },
 };
