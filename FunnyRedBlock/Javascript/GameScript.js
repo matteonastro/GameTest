@@ -431,13 +431,18 @@ function lvl8(){
     myGameArea.draw(BossGroundPre);
     myGameArea.draw(Radiance.hitbox);
     myGameArea.draw(Radiance.attacks.laser);
+    myGameArea.draw(Radiance.attacks.orb);
 
     newBoxCollision(BossGroundPre);
 
     Radiance.updaters.laserMover();
+    Radiance.updaters.orbMover();
     Radiance.attacks.beginAttack();
+    
+    if (Radiance.attacks.orb.orbing){
 
-    console.log(Radiance.attacks.attacking)
+        Radiance.attacks.orb.homing();
+    }
 }
 function lvl9(){
     
@@ -1014,7 +1019,6 @@ var Radiance = {
     attacks: { //Attacks she can randomly choose from
 
         attacking: false,
-        attackTime: 0,
         beginAttack: function(){
             
             if (!this.attacking){
@@ -1025,6 +1029,8 @@ var Radiance = {
                         this.attacking = true;
                         break;
                     case 1:
+                        Radiance.attacks.orb.move();
+                        this.attacking = true;
                         break;
                     case 2:
                         break;
@@ -1040,6 +1046,7 @@ var Radiance = {
             y: 0,
             color: "white",
 
+            attackTime: 0,
             moveSpeed: 0, //If positive moves to the right, if negative moves to the left
 
             move: function(right){
@@ -1056,17 +1063,34 @@ var Radiance = {
         },
         orb: { //A fireball homing towards the player (thats the plan, i might end up just aiming for the player with it tho)
 
-            width: 40,
-            height: 40,
+            width: 60,
+            height: 60,
             x: 0,
             y: 0,
             color: "white",
 
-            moveSpeed: 0,
+            attackTime: 0,
+            moveSpeedx: 0,
+            moveSpeedy: 0,
+            orbing: false,
 
             move: function(){
-                if (){
 
+                Radiance.attacks.orb.x = Radiance.hitbox.x;
+                Radiance.attacks.orb.y = Radiance.hitbox.y;
+
+                Radiance.attacks.orb.orbing = true;
+            },
+            homing: function(){
+
+                if (Radiance.attacks.orb.x < player.x){
+
+                    Radiance.attacks.orb.moveSpeedx  = (player.x - Radiance.attacks.orb.x) / 20;
+                    Radiance.attacks.orb.moveSpeedy  = (player.y - Radiance.attacks.orb.y) / 20;
+                } else{
+                    
+                    Radiance.attacks.orb.moveSpeedx = -((Radiance.attacks.orb.x - player.x) / 20);
+                    Radiance.attacks.orb.moveSpeedy = ((player.y - Radiance.attacks.orb.y) / 20);
                 }
             }
         },
@@ -1087,15 +1111,34 @@ var Radiance = {
 
             Radiance.attacks.laser.x += Radiance.attacks.laser.moveSpeed;
 
-            if (Radiance.attacks.attackTime > 200){
+            if (Radiance.attacks.laser.attackTime > 160){
 
                 Radiance.attacks.attacking = false;
                 Radiance.attacks.laser.moveSpeed = 0;
                 Radiance.attacks.laser.x = 0;
-                Radiance.attacks.attackTime = 0;
+                Radiance.attacks.laser.attackTime = 0;
             } else{
                 
-                Radiance.attacks.attackTime++;
+                Radiance.attacks.laser.attackTime++;
+            }
+        },
+        orbMover: function(){
+
+            Radiance.attacks.orb.x += Radiance.attacks.orb.moveSpeedx;
+            Radiance.attacks.orb.y += Radiance.attacks.orb.moveSpeedy;
+
+            if (Radiance.attacks.orb.attackTime > 160){
+
+                Radiance.attacks.attacking = false;
+                Radiance.attacks.orb.moveSpeedx = 0;
+                Radiance.attacks.orb.moveSpeedy = 0;
+                Radiance.attacks.orb.x = Radiance.hitbox.x;
+                Radiance.attacks.orb.y = Radiance.hitbox.y;
+                Radiance.attacks.orb.attackTime = 0;
+                Radiance.attacks.orb.orbing = false;
+            } else{
+                
+                Radiance.attacks.orb.attackTime++;
             }
         }
     }
