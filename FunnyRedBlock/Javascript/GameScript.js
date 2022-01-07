@@ -422,6 +422,9 @@ function lvl8(){
     if (loadedLevel == 8){
         loadedLevel++;
         cutscene = false;
+        spikes.y = 1000;
+        spikes.color = "black";
+        spikes.height = 10000;
     }
 
     myGameArea.canvas.getContext("2d").fillStyle = "#FFD10D";
@@ -429,33 +432,46 @@ function lvl8(){
 
     myGameArea.draw(player);
     myGameArea.draw(BossGroundPre);
-    myGameArea.draw(Radiance.hitbox);
-    myGameArea.draw(Radiance.attacks.laser);
-    myGameArea.draw(Radiance.attacks.orb);
-
+    myGameArea.draw(P1Pat1);
+    myGameArea.draw(P1Pat2);
+    myGameArea.draw(spikes);
+    
     newBoxCollision(BossGroundPre);
-
-    Radiance.updaters.laserMover();
-    Radiance.updaters.orbMover();
-    Radiance.attacks.beginAttack();
+    newBoxCollision(P1Pat1);
+    newBoxCollision(P1Pat2);
     
-    if (Radiance.attacks.orb.orbing){
+    if (Radiance.HP > 0){
 
-        Radiance.attacks.orb.homing();
+        myGameArea.draw(Radiance.hitbox);
+        myGameArea.draw(Radiance.attacks.laser);
+        myGameArea.draw(Radiance.attacks.orb);
+
+        Radiance.updaters.laserMover();
+        Radiance.updaters.orbMover();
+        Radiance.attacks.beginAttack();
+        Radiance.takeDamage(Radiance.hitbox);
+        if (Radiance.attacks.orb.orbing){
+
+            Radiance.attacks.orb.homing();
+        }
+    } else{
+        
+        myGameArea.draw(P1Pat3);
+        myGameArea.draw(P1Pat4);
+        myGameArea.draw(P1Pat5);
+        myGameArea.draw(Void);
+        
+        newBoxCollision(P1Pat3);
+        newBoxCollision(P1Pat4);
+        newBoxCollision(P1Pat5);
+        lvlPassCollision(Void);
+        death(spikes);
+
+        spikes.y -= 3;
     }
+
 }
-function lvl9(){
-    
-}
-function lvl10(){
-    
-}
-function lvl11(){
-    
-}
-function lvl12(){
-    
-}
+
 
 //COLLISIONS//
 function gravity(){
@@ -1001,11 +1017,49 @@ var Radiance = {
     /*Note: This is insane why the fuck am i doing this lmao well im gonna leave notes for how i slowly become insane from this here 
             [11:09] i am, fine, i think, also this boss is ripped off Hollow Knight, my favourite game 
             [11:26] thinking of making functions specific to the objects in the boss, dont need more of them sooo
-            [13:08] i made the laser attack work, working on the orb one now, i had dinner- i didnt just spend 2 hours making an attack*/
+            [13:08] i made the laser attack work, working on the orb one now, i had dinner- i didnt just spend 2 hours making an attack
+            [14:05] HOMING ORBS HOLY SHIT IT WORKS HOWHOWHOWHOWHOW
+            [16:32] fuck other phases, one is enough, sword attacks going in phase one and HHHHHHHHHHHHHH yea*/
 
-    HP: 9, //One hit = 1 dmg, once the player collides with the radiance one HP is subtracted.
-    takeDamage: function(){
-        this.HP--;
+    HP: 10, //One hit = 1 dmg, once the player collides with the radiance one HP is subtracted.
+    takeDamage: function(box){
+        let playerWidth = player.x + player.width + 5;
+        let playerHeight = player.y + player.height;
+        let boxWidth = box.x + box.width + 5;
+        let boxHeight = box.y + box.height;
+
+        if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
+        if (playerWidth > box.x){
+
+            this.HP--;
+            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
+            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
+            }
+        }
+        if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
+            if (player.x < boxWidth){
+                
+            this.HP--;
+            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
+            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
+            }
+        }
+        if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
+            if (player.y < boxHeight + 10){
+                
+            this.HP--;
+            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
+            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
+            }
+        }
+        if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
+            if (playerHeight > box.y - 1){
+                
+            this.HP--;
+            Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
+            Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
+            }
+        }    
     },
 
     hitbox: { //Boss hitbox
@@ -1022,6 +1076,7 @@ var Radiance = {
         beginAttack: function(){
             
             if (!this.attacking){
+                
                 attackIndex = Math.floor(Math.random() * 3);
                 switch (attackIndex){
                     case 0:
@@ -1056,7 +1111,7 @@ var Radiance = {
                     Radiance.attacks.laser.moveSpeed = 10;
                 } else{
 
-                    Radiance.attacks.laser.x = 1450;
+                    Radiance.attacks.laser.x = 1420;
                     Radiance.attacks.laser.moveSpeed = -10;
                 }
             }
@@ -1066,7 +1121,7 @@ var Radiance = {
             width: 60,
             height: 60,
             x: 0,
-            y: 0,
+            y: -60,
             color: "white",
 
             attackTime: 0,
@@ -1085,12 +1140,12 @@ var Radiance = {
 
                 if (Radiance.attacks.orb.x < player.x){
 
-                    Radiance.attacks.orb.moveSpeedx  = (player.x - Radiance.attacks.orb.x) / 20;
-                    Radiance.attacks.orb.moveSpeedy  = (player.y - Radiance.attacks.orb.y) / 20;
+                    Radiance.attacks.orb.moveSpeedx = (player.x + 10 - Radiance.attacks.orb.x) / 20;
+                    Radiance.attacks.orb.moveSpeedy = (player.y + 50 - Radiance.attacks.orb.y) / 20;
                 } else{
                     
-                    Radiance.attacks.orb.moveSpeedx = -((Radiance.attacks.orb.x - player.x) / 20);
-                    Radiance.attacks.orb.moveSpeedy = ((player.y - Radiance.attacks.orb.y) / 20);
+                    Radiance.attacks.orb.moveSpeedx = -((Radiance.attacks.orb.x - player.x + 10) / 20);
+                    Radiance.attacks.orb.moveSpeedy = ((player.y + 50 - Radiance.attacks.orb.y) / 20);
                 }
             }
         },
@@ -1120,9 +1175,35 @@ var Radiance = {
             } else{
                 
                 Radiance.attacks.laser.attackTime++;
+                
+                if (Radiance.attacks.laser.attackTime > 88){
+                    
+                    if (Radiance.attacks.laser.moveSpeed > 0){
+
+                        Radiance.attacks.laser.moveSpeed -= 0.2;
+                    } else{
+
+                        Radiance.attacks.laser.moveSpeed += 0.2;
+                    }
+                }
+            }
+
+            if (Radiance.attacks.laser.attackTime == 80){
+
+                Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
+                Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
             }
         },
         orbMover: function(){
+
+            Radiance.attacks.orb.width -= 0.2;
+            Radiance.attacks.orb.height -= 0.2;
+
+            if (Radiance.attacks.orb.moveSpeedx > 25 || Radiance.attacks.orb.moveSpeedx < -25){
+                Radiance.attacks.orb.moveSpeedx /= 1.5;
+            } else if (Radiance.attacks.orb.moveSpeedx < 4 & Radiance.attacks.orb.moveSpeedx > -4){
+                Radiance.attacks.orb.moveSpeedx *= 1.5;
+            }
 
             Radiance.attacks.orb.x += Radiance.attacks.orb.moveSpeedx;
             Radiance.attacks.orb.y += Radiance.attacks.orb.moveSpeedy;
@@ -1132,13 +1213,20 @@ var Radiance = {
                 Radiance.attacks.attacking = false;
                 Radiance.attacks.orb.moveSpeedx = 0;
                 Radiance.attacks.orb.moveSpeedy = 0;
-                Radiance.attacks.orb.x = Radiance.hitbox.x;
-                Radiance.attacks.orb.y = Radiance.hitbox.y;
+                Radiance.attacks.orb.x = -1000;
+                Radiance.attacks.orb.y = -1000;
                 Radiance.attacks.orb.attackTime = 0;
                 Radiance.attacks.orb.orbing = false;
+                Radiance.attacks.orb.width = 60;
+                Radiance.attacks.orb.height = 60;
             } else{
                 
                 Radiance.attacks.orb.attackTime++;
+                
+                if (Radiance.attacks.orb.attackTime == 80){
+                    Radiance.hitbox.x = Math.floor(Math.random() * 900) + 200;
+                    Radiance.hitbox.y = Math.floor(Math.random() * 130) + 200;
+                }
             }
         }
     }
@@ -1179,10 +1267,54 @@ var bossPatformThree = {
 }
 
 // Phase 1 \\
-
-// Phase 2 \\
-
-// Phase 3 \\
+var P1Pat1 = {
+    
+    width: 120,
+    height: 40,
+    x: 160,
+    y: 500,
+    color: "#9B5412"
+}
+var P1Pat2 = {
+    
+    width: 120,
+    height: 40,
+    x: 1160,
+    y: 500,
+    color: "#9B5412"
+}
+var P1Pat3 = {
+    
+    width: 120,
+    height: 40,
+    x: 400,
+    y: 400,
+    color: "#9B5412"
+}
+var P1Pat4 = {
+    
+    width: 120,
+    height: 40,
+    x: 940,
+    y: 400,
+    color: "#9B5412"
+}
+var P1Pat5 = {
+    
+    width: 120,
+    height: 40,
+    x: 660,
+    y: 300,
+    color: "#9B5412"
+}
+var Void = {
+    width: 60,
+    height: 60,
+    x: 690,
+    y: 200,
+    color: "black",
+    nextLevel: 9
+};
 
 
 // LEVEL SIX \\
