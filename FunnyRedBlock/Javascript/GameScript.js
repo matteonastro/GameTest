@@ -14,6 +14,9 @@ var myGameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
         this.interval = setInterval(updateGameArea, 20);
+
+        //These are the funny html images :cat_joy from discord emoji:
+        funnyhtmlimages("playeridle");
     },    
 
     draw: function(component) {
@@ -21,7 +24,7 @@ var myGameArea = {
         this.context.fillRect(component.x, component.y, component.width, component.height);
     },
 }
-
+let frame = 0;
 function updateGameArea() {
     
     myGameArea.canvas.getContext("2d").clearRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
@@ -77,8 +80,12 @@ function updateGameArea() {
     mainObjects();
 } 
 
-let levelIndex = 1;
-let loadedLevel = 2;
+function funnyhtmlimages(id){
+    document.getElementById(id).style.width = "0px";
+}
+
+let levelIndex = 7;
+let loadedLevel = 7;
 
 function mainObjects(){
     
@@ -86,12 +93,14 @@ function mainObjects(){
     myGameArea.draw(wallLeft);
     myGameArea.draw(wallRight);
     myGameArea.draw(block);
+
+
     death(spikes);
     gravity();
     wallRightCollision();
     wallLeftCollision();
     moveright();
-    moveleft();
+    moveleft(); 
     movedown();
 
     if (airTime < 161){
@@ -105,6 +114,7 @@ function mainObjects(){
         player.color = "cyan";
     }
 }
+
 function lvl1(){
 
     //Drawers
@@ -347,10 +357,87 @@ function lvl6(){
     }
 }
 function lvl7(){
+    if (loadedLevel == 7){
+        loadedLevel++;
+        player.checkPoint.X = 600;
+        player.checkPoint.Y = 500;
+        player.x = 600;
+        player.y = 500
+
+        spikes.color = "transparent"
+        block.y += 180;
+        wallLeft.color = "transparent"
+        wallRight.color = "transparent"
+        wallLeft.x = -100;
+        wallRight.x += 100;
+        spikes.x -= 300;
+        spikes.y += 160;
+        spikes.height = 200
+    }
+
     
+    myGameArea.canvas.getContext("2d").fillStyle = "#FFD10D";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+
+    myGameArea.draw(player);
+    myGameArea.draw(BossGroundPre);
+    myGameArea.draw(bossPatformTwo);
+    myGameArea.draw(bossPatformOne);
+    myGameArea.draw(bossPatformThree);
+    
+    newBoxCollision(BossGroundPre);
+    newBoxCollision(bossPatformTwo);
+    newBoxCollision(bossPatformOne);
+    newBoxCollision(bossPatformThree);
+
+    if (player.y < bossPatformThree.y - 80){
+
+        myGameArea.canvas.getContext("2d").fillStyle = "black";
+        myGameArea.canvas.getContext("2d").font = "40px italic";
+        myGameArea.canvas.getContext("2d").fillText("Press /X/ to challenge the god of this land", 400, 160);
+
+        if (challenge){
+
+            cutscene = true;
+            frame++;
+            switch (frame){
+                case 13:
+                    bossPatformOne.y = 10000 //Im genuinely too lazy so whatever works man
+                    break;
+                case 27:
+                    bossPatformTwo.y = 10000 //Im genuinely too lazy so whatever works man
+                    break;
+                case 42:
+                    bossPatformThree.y = 10000 //Im genuinely too lazy so whatever works man
+                    break;
+                case 50:
+                    levelIndex++;
+                    break;
+            }
+        }
+    }
 }
 function lvl8(){
-    
+
+    if (loadedLevel == 8){
+        loadedLevel++;
+        cutscene = false;
+    }
+
+    myGameArea.canvas.getContext("2d").fillStyle = "#FFD10D";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
+
+    myGameArea.draw(player);
+    myGameArea.draw(BossGroundPre);
+    myGameArea.draw(Radiance.hitbox);
+    myGameArea.draw(Radiance.attacks.laser);
+
+    newBoxCollision(BossGroundPre);
+
+    Radiance.updaters.laserMover();
+    Radiance.attacks.beginAttack();
+
+    console.log(Radiance.attacks.attacking)
 }
 function lvl9(){
     
@@ -903,6 +990,158 @@ function fanOnCollision(box, lock){
     } 
 }
 
+// <--- THE RADIANCE ---> \\
+var Radiance = {
+
+    /*Note: This is insane why the fuck am i doing this lmao well im gonna leave notes for how i slowly become insane from this here 
+            [11:09] i am, fine, i think, also this boss is ripped off Hollow Knight, my favourite game 
+            [11:26] thinking of making functions specific to the objects in the boss, dont need more of them sooo
+            [13:08] i made the laser attack work, working on the orb one now, i had dinner- i didnt just spend 2 hours making an attack*/
+
+    HP: 9, //One hit = 1 dmg, once the player collides with the radiance one HP is subtracted.
+    takeDamage: function(){
+        this.HP--;
+    },
+
+    hitbox: { //Boss hitbox
+        width: 120,
+        height: 120,
+        x: 640,
+        y: 200,
+        color: "white"
+    },
+
+    attacks: { //Attacks she can randomly choose from
+
+        attacking: false,
+        attackTime: 0,
+        beginAttack: function(){
+            
+            if (!this.attacking){
+                attackIndex = Math.floor(Math.random() * 3);
+                switch (attackIndex){
+                    case 0:
+                        Radiance.attacks.laser.move(Math.random() >= 0.5);
+                        this.attacking = true;
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                }
+            }
+        },
+
+        laser: { //One laser going from left to right, player has to use their iFrame ability ([D] Key) to pass through.
+            
+            width: 20,
+            height: 1000,
+            x: 0,
+            y: 0,
+            color: "white",
+
+            moveSpeed: 0, //If positive moves to the right, if negative moves to the left
+
+            move: function(right){
+                if (right){
+                    
+                    Radiance.attacks.laser.x = 0;
+                    Radiance.attacks.laser.moveSpeed = 10;
+                } else{
+
+                    Radiance.attacks.laser.x = 1450;
+                    Radiance.attacks.laser.moveSpeed = -10;
+                }
+            }
+        },
+        orb: { //A fireball homing towards the player (thats the plan, i might end up just aiming for the player with it tho)
+
+            width: 40,
+            height: 40,
+            x: 0,
+            y: 0,
+            color: "white",
+
+            moveSpeed: 0,
+
+            move: function(){
+                if (){
+
+                }
+            }
+        },
+        sword: { //A sword appears in the sky, after 20 frames it falls down (this is for phase 2)
+
+            preview: 20,
+            
+            width: 20,
+            height: 80,
+            x: 440,
+            y: 20,
+            color: "white"
+        },
+    },
+    
+    updaters: {
+        laserMover: function(){
+
+            Radiance.attacks.laser.x += Radiance.attacks.laser.moveSpeed;
+
+            if (Radiance.attacks.attackTime > 200){
+
+                Radiance.attacks.attacking = false;
+                Radiance.attacks.laser.moveSpeed = 0;
+                Radiance.attacks.laser.x = 0;
+                Radiance.attacks.attackTime = 0;
+            } else{
+                
+                Radiance.attacks.attackTime++;
+            }
+        }
+    }
+}
+
+// Pre Phase \\
+var BossGroundPre = {
+    
+    width: 1000,
+    height: 100,
+    x: 220,
+    y: 600,
+    color: "#9B5412"
+}
+var bossPatformOne = {
+    
+    width: 120,
+    height: 40,
+    x: 440,
+    y: 500,
+    color: "#9B5412"
+}
+var bossPatformTwo = {
+    
+    width: 120,
+    height: 40,
+    x: 800,
+    y: 440,
+    color: "#9B5412"
+}
+var bossPatformThree = {
+    
+    width: 160,
+    height: 40,
+    x: 500,
+    y: 360,
+    color: "#9B5412"
+}
+
+// Phase 1 \\
+
+// Phase 2 \\
+
+// Phase 3 \\
+
+
 // LEVEL SIX \\
 var lvl6Box1 = {
     
@@ -1411,7 +1650,7 @@ var player = {
     checkPoint: {
         X: 950,
         Y: 370
-    }
+    },
 };
 var block = {
     width: 1450,
@@ -1449,6 +1688,8 @@ let ground = true;
 let airTime = 0;
 let grab = false;
 let umbrella = false;
+let challenge = false;
+let cutscene = false;
 
 let speedRight = 0;
 let speedLeft = 0;
@@ -1459,59 +1700,66 @@ document.addEventListener('keydown', (event) => {
     
     //ArrowDown ArrowRight ArrowUp ArrowLeft
 
-    switch(event.key) {
+    if (!cutscene){
+        switch(event.key) {
 
-        case "ArrowDown":
-            speedDown = 0;
-        break;
-        
-        case "ArrowRight":
-            speedRight = 10;
-            player.facing = "RIGHT"
-        break;
+            case "ArrowDown":
+                speedDown = 0;
+            break;
+            
+            case "ArrowRight":
+                speedRight = 10;
+                player.facing = "RIGHT"
+            break;
 
-        case "a":
-            speedUp = 15;
-        break;
+            case "a":
+                speedUp = 15;
+            break;
 
-        case "ArrowLeft":
-            speedLeft = 10;
-            player.facing = "LEFT"
-        break;
+            case "ArrowLeft":
+                speedLeft = 10;
+                player.facing = "LEFT"
+            break;
 
-        case "s":
-            umbrella = true;
-        break;
+            case "s":
+                umbrella = true;
+            break;
+
+            case "x":
+                challenge = true;
+            break;
+        }
     }
 });
 document.addEventListener('keyup', (event) => {
     
     //ArrowDown ArrowRight ArrowUp ArrowLeft
+    if (!cutscene){
+        switch(event.key) {
 
-    switch(event.key) {
-
-        case "ArrowDown":
-            speedDown = 0;
-        break;
-        
-        case "ArrowRight":
-            speedRight = 0;
+            case "ArrowDown":
+                speedDown = 0;
+            break;
             
-        break;
+            case "ArrowRight":
+                speedRight = 0;
+                
+            break;
 
-        case "a":
-            speedUp = 0;
-            airTime = 162;
-        break;
+            case "a":
+                speedUp = 0;
+                airTime = 162;
+            break;
 
-        case "ArrowLeft":
-            speedLeft = 0;
-            
-        break;
+            case "ArrowLeft":
+                speedLeft = 0;
+                
+            break;
 
-        case "s":
-            umbrella = false;
-        break;
+            case "s":
+                umbrella = false;
+            break;
+        }
     }
 });
 function jump() {
