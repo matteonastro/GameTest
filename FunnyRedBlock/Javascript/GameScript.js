@@ -461,23 +461,24 @@ function lvl8(){
     myGameArea.canvas.getContext("2d").fillStyle = "#FFD10D";
     myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
 
-    myGameArea.draw(player);
     myGameArea.draw(BossGroundPre);
     myGameArea.draw(P1Pat1);
     myGameArea.draw(P1Pat2);
     myGameArea.draw(spikes);
+    myGameArea.draw(Radiance.hitbox);
+    myGameArea.draw(player);
     
     newBoxCollision(BossGroundPre);
     conveyorCollision(P1Pat1);
     fanCollision(P1Pat2);
-    if (player.y > BossGroundPre.y + 80){
+    if (player.y > BossGroundPre.y + 80 || player.HP < 1){
         deathReset();
         Radiance.HP = 500;
+        player.HP = 100;
     }
     
     if (Radiance.HP > 0){
 
-        myGameArea.draw(Radiance.hitbox);
         myGameArea.draw(Radiance.attacks.laser);
         myGameArea.draw(Radiance.attacks.orb);
         myGameArea.draw(Radiance.attacks.sword);
@@ -497,7 +498,8 @@ function lvl8(){
         }
         myGameArea.canvas.getContext("2d").fillStyle = "black";
         myGameArea.canvas.getContext("2d").font = "40px italic";
-        myGameArea.canvas.getContext("2d").fillText(Radiance.HP, Radiance.hitbox.x+40, Radiance.hitbox.y+80);
+        myGameArea.canvas.getContext("2d").fillText("The Radiance: " + Radiance.HP, 20, 200);
+        myGameArea.canvas.getContext("2d").fillText("Funny Red Block: " + player.HP, 20, 240);
     } else{
         
         myGameArea.draw(P1Pat3);
@@ -510,6 +512,7 @@ function lvl8(){
         newBoxCollision(P1Pat5);
         lvlPassCollision(Void);
         death(spikes);
+        Radiance.hitbox.y = 999999;
 
         spikes.y -= 3;
     }
@@ -1071,38 +1074,22 @@ function bossDeath(box){
 
     if (playerHeight > box.y & player.y < boxHeight & player.x < boxWidth - 40){
        if (playerWidth > box.x){
-        if (Radiance.HP < 500){
-            Radiance.HP += 2;
-        } else {
-            Radiance.HP = 500;
-        }
+           player.HP--;
         }
     }
     if (playerHeight > box.y & player.y < boxHeight & playerWidth > box.x + 40){
         if (player.x < boxWidth){
-            if (Radiance.HP < 500){
-                Radiance.HP += 2;
-            } else {
-                Radiance.HP = 500;
-            }
+            player.HP--;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & playerHeight > box.y + 40){
         if (player.y < boxHeight + 10){
-            if (Radiance.HP < 500){
-                Radiance.HP += 2;
-            } else {
-                Radiance.HP = 500;
-            }
+            player.HP--;
         }
     }
     if (playerWidth > box.x + 10 & player.x < boxWidth - 10 & player.y < boxHeight - 40){
         if (playerHeight > box.y - 1){
-           if (Radiance.HP < 500){
-               Radiance.HP += 2;
-           } else {
-               Radiance.HP = 500;
-           }
+            player.HP--;
         }
     }    
 }
@@ -1933,6 +1920,7 @@ var lvl1Pass = {
 
 //GAMEOBJECTS//
 var player = {
+    HP: 100,
     width: 40,
     height: 80,
     x: 940,
