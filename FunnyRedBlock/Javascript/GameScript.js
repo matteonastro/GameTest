@@ -376,7 +376,7 @@ function lvl6(){
     fanOnCollision(lvl6FanOn, lvl6Fan7);
     lvlPassCollision(lvl6Pass);
 
-    if (player.y + player.height < lvl6KillerPillar1.y & lvl6KillerPillar1.x + lvl6KillerPillar1.width < 1500){
+    if (player.y + player.height < lvl6KillerPillar1.y & lvl6KillerPillar1.x + lvl6KillerPillar1.width < 1560){
         lvl6KillerPillar1.x += 10;
     }
     if (!lvl6Fan7.on & lvl6Pass.y + lvl6Pass.width < lvl6Fan7.y - 5){
