@@ -14,6 +14,7 @@ var myGameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
         this.interval = setInterval(updateGameArea, 20);
+        this.speedrunTimer = setInterval(timerPlus, 16.7);
     },    
 
     draw: function(component) {
@@ -82,11 +83,39 @@ function updateGameArea() {
         myGameArea.canvas.getContext("2d").fillStyle = "white";
         myGameArea.canvas.getContext("2d").font = "80px italic";
         myGameArea.canvas.getContext("2d").fillText("You have been embraced by the void.", 140, 340);
+        ended = true;
     }
+    myGameArea.canvas.getContext("2d").fillStyle = "black";
+    myGameArea.canvas.getContext("2d").fillRect(0,0, 340, 40);
+    myGameArea.canvas.getContext("2d").fillStyle = "white";
+    myGameArea.canvas.getContext("2d").font = "30px italic";
+    myGameArea.canvas.getContext("2d").fillText("Speedrun trimer " + timer.hours + ":" + timer.minutes + "." + timer.seconds, 10, 25);
 } 
 
 let levelIndex = 1;
 let loadedLevel = 2;
+
+let started = false;
+let ended = false;
+let timer = {
+    seconds: 0,
+    minutes: 0,
+    hours:0
+}
+function timerPlus(){
+
+    if (started & !ended){
+        timer.seconds++;
+        if (timer.seconds > 59){
+            timer.seconds = 0;
+            timer.minutes++;
+        }
+        if (timer.minutes > 59){
+            timer.minutes = 0;
+            timer.hours++;
+        }
+    }
+}
 
 function mainObjects(){
     
@@ -488,6 +517,7 @@ function lvl8(){
 }
 function lvl9(){
     
+    ended = true;
     myGameArea.canvas.getContext("2d").fillStyle = "black";
     myGameArea.canvas.getContext("2d").fillRect(0,0, myGameArea.canvas.width, myGameArea.canvas.height);
     myGameArea.canvas.getContext("2d").fillStyle = "white";
@@ -1743,14 +1773,14 @@ var lvl3Mover = {
     width: 160,
     height: 40,
     x: 1200,
-    y: 500,
+    y: 300,
     color: "darkred"
 }
 var lvl3Mover2 = {
     
     width: 160,
     height: 40,
-    x: 400,
+    x: 360,
     y: 120,
     color: "darkred"
 }
@@ -1972,19 +2002,23 @@ document.addEventListener('keydown', (event) => {
             case "ArrowRight":
                 speedRight = 10;
                 player.facing = "RIGHT"
+                started = true;
             break;
 
             case "a":
                 speedUp = 15;
+                started = true;
             break;
 
             case "ArrowLeft":
                 speedLeft = 10;
                 player.facing = "LEFT"
+                started = true;
             break;
 
             case "s":
                 umbrella = true;
+                started = true;
             break;
 
             case "x":
